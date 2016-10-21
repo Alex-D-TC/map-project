@@ -1,0 +1,15 @@
+package com.company.Domain;
+
+/**
+ * Created by AlexandruD on 10/14/2016.
+ */
+public class SarcinaValidator extends Validator<Sarcina> {
+
+
+    @Override
+    public boolean validate(Sarcina s) {
+        // Don't have much to validate bo$$
+        return true;
+    }
+
+}

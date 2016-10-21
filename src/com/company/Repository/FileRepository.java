@@ -1,0 +1,141 @@
+package com.company.Repository;
+
+import com.company.Utils.Parser;
+import java.util.function.Predicate;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Created by AlexandruD on 10/14/2016.
+ */
+public class FileRepository<T> implements Repository<T> {
+
+    private String filePath;
+    private Parser<T> parser;
+
+    public FileRepository(String filePath, Parser<T> parser) {
+        this.filePath = filePath;
+        this.parser = parser;
+    }
+
+    @Override
+    public void add(T elem) {
+
+        // TODO: THROW EXCEPTION
+        if(get((T item) -> (item.equals(elem))).size() != 0) {
+            return;
+        }
+
+        try(BufferedWriter writer =
+                    new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath, true)))) {
+
+            writer.write(elem.toString() + '\n');
+
+        }catch(IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public T remove(T rElem) {
+
+        List<T> readItems = getAll();
+        T elem = readItems.remove(readItems.indexOf(rElem));
+
+        if(elem == null) {
+            return null;
+        }
+
+        readItems.remove(rElem);
+
+        writeToFile(readItems);
+
+        return elem;
+    }
+
+    @Override
+    public List<T> getAll() {
+
+        List<T> elems = new ArrayList<>();
+
+        try(BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(new FileInputStream(filePath)))) {
+
+            T elem;
+            while((elem = parser.parse(reader)) != null) {
+                elems.add(elem);
+            }
+
+        }catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        return elems;
+
+    }
+
+    @Override
+    public List<T> get(Predicate<T> op) {
+
+        List<T> elements = new ArrayList<>();
+
+        try(BufferedReader reader =
+                    new BufferedReader(new InputStreamReader(new FileInputStream(filePath)))) {
+
+            T elem;
+            while((elem = parser.parse(reader)) != null) {
+                if(op.test(elem)) {
+                    elements.add(elem);
+                }
+            }
+
+        }catch(IOException e ) {
+            e.printStackTrace();
+        }
+
+        return elements;
+    }
+
+    @Override
+    public void update(T original, T newElem) {
+
+        List<T> elems = getAll();
+        int size = elems.size();
+
+        elems = elems.stream()
+                .filter((elem) -> (!elem.equals(original)))
+                .collect(Collectors.toList());
+
+        // TODO: THROW SOME EXCEPTION
+        if(size == elems.size()) {
+            return;
+        }
+
+        elems.add(newElem);
+        writeToFile(elems);
+    }
+
+    /**
+     * Writes a list of items to the file. Writing is NOT in append mode.
+     * @param elements The list of elements
+     */
+    private void writeToFile(List<T> elements) {
+
+        try(BufferedWriter writer =
+                    new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath)))) {
+
+            for(T elem : elements) {
+                writer.write(elem.toString());
+            }
+
+        }catch(IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+}
