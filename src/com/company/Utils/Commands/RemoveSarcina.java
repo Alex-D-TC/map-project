@@ -2,6 +2,7 @@ package com.company.Utils.Commands;
 
 import com.company.Controller.SarcinaController;
 import com.company.Domain.Sarcina;
+import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.IOUtils;
 import com.company.Utils.ReadUtils;
 
@@ -15,13 +16,14 @@ public class RemoveSarcina extends Command {
         super("Remove task", "Removes a task", () -> {
 
             int id = ReadUtils.readInt(IOUtils.getScannerInstanceOnIn(), "Input id: ");
-            Sarcina sarc = sarcinaController.remove(new Sarcina(id));
-            String result = "No sarcina found";
-            if(sarc != null) {
-                result = "Removed sarcina: " + sarc.toString();
-            }
+            try {
 
-            return result;
+                Sarcina sarc = sarcinaController.remove(new Sarcina(id));
+                return "Removed sarcina: " + sarc.toString();
+
+            }catch(ElementNotFoundException e) {
+                return e.getMessage();
+            }
         });
     }
 

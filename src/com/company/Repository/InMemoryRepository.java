@@ -1,5 +1,8 @@
 package com.company.Repository;
 
+import com.company.Utils.Exceptions.ElementExistsException;
+import com.company.Utils.Exceptions.ElementNotFoundException;
+
 import java.util.function.Predicate;
 
 import java.util.ArrayList;
@@ -9,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * Created by AlexandruD on 10/14/2016.
  */
-public class InMemoryRepository<T> implements Repository<T> {
+public class InMemoryRepository<T> extends Repository<T> {
 
     private List<T> elems;
 
@@ -21,36 +24,34 @@ public class InMemoryRepository<T> implements Repository<T> {
         return new ArrayList<>(elems);
     }
 
-    public void add(T s) {
+    public void add(T s) throws ElementExistsException {
 
         if(elems.indexOf(s) != -1)
-            return;
+            throw new ElementExistsException();
 
         elems.add(s);
     }
 
     public List<T> get(Predicate<T> check) {
 
-        return elems.stream().filter((post) ->
-            check.test(post)).collect(Collectors.toList());
+        return elems.stream().filter(check::test)
+                    .collect(Collectors.toList());
     }
 
-    public void update(T oldT, T newT) {
+    public void update(T oldT, T newT) throws ElementNotFoundException {
 
         List<T> newElems = elems.stream()
                 .map((elem) -> (elem.equals(oldT)? newT : elem))
                 .collect(Collectors.toList());
 
-        // TODO: THROW EXCEPTION FOR NO ELEMENT FOUND
         if(newElems.equals(elems)) {
-            return;
+            throw new ElementNotFoundException();
         }
 
         elems = newElems;
-
     }
 
-   public T remove(T post) {
+   public T remove(T post) throws ElementNotFoundException {
 
         List<T> results = elems.stream()
                 .filter((elem) -> (elem.equals(post)))
@@ -61,7 +62,7 @@ public class InMemoryRepository<T> implements Repository<T> {
         if(results.size() != 0) {
             elem = results.get(0);
         } else {
-            return null;
+            throw new ElementNotFoundException();
         }
 
         elems.remove(elem);

@@ -94,7 +94,7 @@ public class Main {
                 Sarcina s = null;
 
                 try {
-                    String[] tokens = reader.readLine().split(";");
+                    String[] tokens = reader.readLine().split("|");
                     int id = Integer.parseInt(tokens[0]);
                     String description = tokens[2];
 
@@ -113,7 +113,7 @@ public class Main {
 
                 try {
 
-                    String[] tokens = reader.readLine().split(";");
+                    String[] tokens = reader.readLine().split("|");
                     int id = Integer.parseInt(tokens[0]);
                     String name = tokens[2];
                     Post.Type type = Post.stringToType(tokens[3]);

@@ -1,5 +1,7 @@
 package com.company.Repository;
 
+import com.company.Utils.Exceptions.ElementExistsException;
+import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.Parser;
 import java.util.function.Predicate;
 
@@ -11,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Created by AlexandruD on 10/14/2016.
  */
-public class FileRepository<T> implements Repository<T> {
+public class FileRepository<T> extends Repository<T> {
 
     private String filePath;
     private Parser<T> parser;
@@ -22,11 +24,10 @@ public class FileRepository<T> implements Repository<T> {
     }
 
     @Override
-    public void add(T elem) {
+    public void add(T elem) throws ElementExistsException {
 
-        // TODO: THROW EXCEPTION
         if(get((T item) -> (item.equals(elem))).size() != 0) {
-            return;
+            throw new ElementExistsException();
         }
 
         try(BufferedWriter writer =
@@ -41,13 +42,13 @@ public class FileRepository<T> implements Repository<T> {
     }
 
     @Override
-    public T remove(T rElem) {
+    public T remove(T rElem) throws ElementNotFoundException {
 
         List<T> readItems = getAll();
         T elem = readItems.remove(readItems.indexOf(rElem));
 
         if(elem == null) {
-            return null;
+            throw new ElementNotFoundException();
         }
 
         readItems.remove(rElem);
@@ -101,7 +102,7 @@ public class FileRepository<T> implements Repository<T> {
     }
 
     @Override
-    public void update(T original, T newElem) {
+    public void update(T original, T newElem) throws ElementNotFoundException {
 
         List<T> elems = getAll();
         int size = elems.size();
@@ -110,9 +111,8 @@ public class FileRepository<T> implements Repository<T> {
                 .filter((elem) -> (!elem.equals(original)))
                 .collect(Collectors.toList());
 
-        // TODO: THROW SOME EXCEPTION
         if(size == elems.size()) {
-            return;
+            throw new ElementNotFoundException();
         }
 
         elems.add(newElem);

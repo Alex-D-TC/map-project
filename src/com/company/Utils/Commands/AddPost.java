@@ -1,8 +1,11 @@
 package com.company.Utils.Commands;
 
 import com.company.Controller.PostController;
+import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.IOUtils;
 import com.company.Utils.ReadUtils;
+
+import javax.xml.bind.ValidationException;
 
 /**
  * Created by AlexandruD on 10/14/2016.
@@ -13,7 +16,12 @@ public class AddPost extends Command {
 
         super("Add position", "Adds a position", () -> {
 
-            postController.add(ReadUtils.readPost(IOUtils.getScannerInstanceOnIn()));
+            try {
+                postController.add(ReadUtils.readPost(IOUtils.getScannerInstanceOnIn()));
+            }catch (ValidationException | ElementExistsException e) {
+                return e.getMessage();
+            }
+
             return "Post added";
         });
 
