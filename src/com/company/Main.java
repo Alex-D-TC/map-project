@@ -16,10 +16,13 @@ import com.company.Domain.SarcinaValidator;
 import com.company.GUI.Gui;
 import com.company.Repository.FileRepository;
 import com.company.Repository.InMemoryRepository;
-import com.company.Repository.Repository;
+import com.company.Repository.CrudRepository;
+import com.company.Tests.TestRunner;
 import com.company.Tests.Tests;
 import com.company.Utils.Commands.*;
+import com.company.Utils.Exceptions.FailedTestException;
 import com.sun.javaws.exceptions.InvalidArgumentException;
+import junit.framework.TestFailure;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,8 +36,8 @@ public class Main {
 
     private static PostController postController;
     private static SarcinaController sarcinaController;
-    private static Repository<Sarcina> sarcinaRepository;
-    private static Repository<Post> postRepository;
+    private static CrudRepository<Sarcina> sarcinaRepository;
+    private static CrudRepository<Post> postRepository;
 
     private static final String USAGE = "USAGE: -[F|D] [filePath]";
     private static boolean isFile;
@@ -153,8 +156,13 @@ public class Main {
             System.exit(1);
         }
 
-        Tests t = new Tests();
-        t.test();
+        TestRunner runner = new TestRunner();
+        try {
+            runner.run();
+        }catch(FailedTestException e) {
+            System.err.println(e.getMessage());
+            return;
+        }
 
         buildRepositories();
         buildControllers();

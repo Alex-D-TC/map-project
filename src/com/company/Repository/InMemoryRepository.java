@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * Created by AlexandruD on 10/14/2016.
  */
-public class InMemoryRepository<T> extends Repository<T> {
+public class InMemoryRepository<T> extends CrudRepository<T> {
 
     private List<T> elems;
 

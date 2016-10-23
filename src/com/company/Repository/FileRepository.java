@@ -3,6 +3,7 @@ package com.company.Repository;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.Parser;
+
 import java.util.function.Predicate;
 
 import java.io.*;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Created by AlexandruD on 10/14/2016.
  */
-public class FileRepository<T> extends Repository<T> {
+public class FileRepository<T> extends CrudRepository<T> {
 
     private String filePath;
     private Parser<T> parser;
@@ -45,13 +46,14 @@ public class FileRepository<T> extends Repository<T> {
     public T remove(T rElem) throws ElementNotFoundException {
 
         List<T> readItems = getAll();
-        T elem = readItems.remove(readItems.indexOf(rElem));
 
-        if(elem == null) {
+        int index = readItems.indexOf(rElem);
+
+        if(index == -1) {
             throw new ElementNotFoundException();
         }
 
-        readItems.remove(rElem);
+        T elem = readItems.remove(readItems.indexOf(rElem));
 
         writeToFile(readItems);
 
@@ -105,13 +107,13 @@ public class FileRepository<T> extends Repository<T> {
     public void update(T original, T newElem) throws ElementNotFoundException {
 
         List<T> elems = getAll();
-        int size = elems.size();
+        int elemCount = elems.size();
 
         elems = elems.stream()
                 .filter((elem) -> (!elem.equals(original)))
                 .collect(Collectors.toList());
 
-        if(size == elems.size()) {
+        if(elemCount == elems.size()) {
             throw new ElementNotFoundException();
         }
 

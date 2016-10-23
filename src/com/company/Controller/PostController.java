@@ -3,7 +3,7 @@ package com.company.Controller;
 import com.company.Domain.Post;
 
 import com.company.Domain.Validator;
-import com.company.Repository.Repository;
+import com.company.Repository.CrudRepository;
 
 /**
  * Created by AlexandruD on 10/8/2016.
@@ -11,7 +11,7 @@ import com.company.Repository.Repository;
 public class PostController extends CrudController<Post> {
 
 
-    public PostController(Repository<Post> repo, Validator<Post> validator) {
+    public PostController(CrudRepository<Post> repo, Validator<Post> validator) {
         super(repo, validator);
     }
 

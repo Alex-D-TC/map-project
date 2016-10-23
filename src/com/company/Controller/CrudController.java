@@ -1,7 +1,7 @@
 package com.company.Controller;
 
 import com.company.Domain.Validator;
-import com.company.Repository.Repository;
+import com.company.Repository.CrudRepository;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 
@@ -13,11 +13,11 @@ import java.util.List;
  */
 public abstract class CrudController<T> {
 
-    private Repository<T> repo;
+    private CrudRepository<T> repo;
     private Validator<T> validator;
 
 
-    public CrudController(Repository<T> repo,
+    public CrudController(CrudRepository<T> repo,
                           Validator<T> validator) {
         this.repo = repo;
         this.validator = validator;

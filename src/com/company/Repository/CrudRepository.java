@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 /**
  * Created by AlexandruD on 10/8/2016.
  */
-public abstract class Repository<T> {
+public abstract class CrudRepository<T> {
 
     /**
      * Adds a post
