@@ -22,9 +22,9 @@ public class ReadUtils {
             System.out.print(message + " ");
             String line = scanner.nextLine();
 
-            if(line.equals(Post.fullTimeString)) {
+            if(line.equals(Post.FULL_TIME_STRING)) {
                 type = Post.Type.FULLTIME;
-            } else if(line.equals(Post.partTimeString)) {
+            } else if(line.equals(Post.PART_TIME_STRING)) {
                 type = Post.Type.PARTTIME;
             }
 

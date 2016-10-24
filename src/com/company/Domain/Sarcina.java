@@ -34,10 +34,6 @@ public class Sarcina {
         description = nDescription;
     }
 
-    public boolean equals(Sarcina other) {
-        return id == other.id;
-    }
-
     public String toString() {
         return id + " " + description;
     }

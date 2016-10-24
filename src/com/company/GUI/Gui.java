@@ -5,7 +5,6 @@ import com.company.Utils.IOUtils;
 import com.company.Utils.ReadUtils;
 
 import java.util.Map;
-import java.util.Scanner;
 
 /**
  * Created by AlexandruD on 10/8/2016.
@@ -23,7 +22,6 @@ public class Gui {
      * Starts the 'gui'
      */
     public void start() {
-        Scanner scanner = IOUtils.getScannerInstanceOnIn();
         String option;
 
         while(1 == 1) {

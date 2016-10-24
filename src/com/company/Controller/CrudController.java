@@ -7,6 +7,7 @@ import com.company.Utils.Exceptions.ElementNotFoundException;
 
 import javax.xml.bind.ValidationException;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Created by AlexandruD on 10/23/2016.
@@ -61,8 +62,17 @@ public abstract class CrudController<T> {
      * Returns all elements
      * @return - The list of all elements
      */
-    public List<T> get() {
+    public List<T> getAll() {
         return repo.getAll();
+    }
+
+    /**
+     * Returns elements satisfying the given {@link Predicate}
+     * @param op - The predicate
+     * @return - A list of all matching elements
+     */
+    public List<T> get(Predicate<T> op) {
+        return repo.get(op);
     }
 
 

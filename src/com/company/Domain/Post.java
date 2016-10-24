@@ -18,13 +18,13 @@ public class Post {
         PARTTIME
     }
 
-    public static String fullTimeString = "FullTime";
-    public static String partTimeString = "PartTime";
+    public static final String FULL_TIME_STRING = "FullTime";
+    public static final String PART_TIME_STRING = "PartTime";
 
     public static Map<String, Type> typeMap = Collections.unmodifiableMap(
           Stream.of(
-            new AbstractMap.SimpleEntry<>(fullTimeString, Type.FULLTIME),
-            new AbstractMap.SimpleEntry<>(partTimeString, Type.PARTTIME)
+            new AbstractMap.SimpleEntry<>(FULL_TIME_STRING, Type.FULLTIME),
+            new AbstractMap.SimpleEntry<>(PART_TIME_STRING, Type.PARTTIME)
           ).collect(Collectors.toMap((e) -> (e.getKey()), (e) -> (e.getValue()))));
 
     public Post(int id) {
@@ -63,10 +63,6 @@ public class Post {
         type = nType;
     }
 
-    public boolean equals(Post other) {
-        return id == other.id;
-    }
-
     public String toString() {
         return id + " " + name + " " + typeToString(type);
     }
@@ -88,9 +84,9 @@ public class Post {
     public static String typeToString(Type type) {
         switch (type) {
             case FULLTIME:
-                return fullTimeString;
+                return FULL_TIME_STRING;
             default:
-                return partTimeString;
+                return PART_TIME_STRING;
         }
     }
 

@@ -14,7 +14,7 @@ public class GetSarcini extends Command {
 
         super("Get tasks", "Gets all tasks", () -> {
 
-            List<Sarcina> sarcini = sarcinaController.get();
+            List<Sarcina> sarcini = sarcinaController.getAll();
             StringBuilder resString = new StringBuilder("Sarcini:\n");
 
             for(int i = 0; i < sarcini.size(); ++i) {

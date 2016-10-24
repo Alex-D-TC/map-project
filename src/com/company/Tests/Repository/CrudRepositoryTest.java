@@ -14,7 +14,7 @@ import java.util.stream.Stream;
  */
 public class CrudRepositoryTest {
 
-    CrudRepository<String> repo;
+    protected CrudRepository<String> repo;
 
 
     @Test(expected = Test.None.class)

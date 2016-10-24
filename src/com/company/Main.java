@@ -18,16 +18,15 @@ import com.company.Repository.FileRepository;
 import com.company.Repository.InMemoryRepository;
 import com.company.Repository.CrudRepository;
 import com.company.Tests.TestRunner;
-import com.company.Tests.Tests;
 import com.company.Utils.Commands.*;
 import com.company.Utils.Exceptions.FailedTestException;
 import com.sun.javaws.exceptions.InvalidArgumentException;
-import junit.framework.TestFailure;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by AlexandruD on 10/8/2016.
@@ -39,7 +38,7 @@ public class Main {
     private static CrudRepository<Sarcina> sarcinaRepository;
     private static CrudRepository<Post> postRepository;
 
-    private static final String USAGE = "USAGE: -[F|D] [filePath]";
+    private static final String USAGE = "USAGE: -[F|M] [filePath]";
     private static boolean isFile;
     private static String filePath;
 
@@ -73,17 +72,18 @@ public class Main {
     private static Map<String, Command> buildCommandMap(PostController postController,
                                                         SarcinaController sarcinaController) {
 
-        List<Command> commandsList = new ArrayList<>();
-
-        commandsList.add(new QuitCommand());
-        commandsList.add(new AddPost(postController));
-        commandsList.add(new AddSarcina(sarcinaController));
-        commandsList.add(new GetPosturi(postController));
-        commandsList.add(new GetSarcini(sarcinaController));
-        commandsList.add(new RemovePost(postController));
-        commandsList.add(new RemoveSarcina(sarcinaController));
-        commandsList.add(new UpdatePost(postController));
-        commandsList.add(new UpdateSarcina(sarcinaController));
+        List<Command> commandsList = new ArrayList<>(
+                Stream.of(
+                        new QuitCommand(),
+                        new AddPost(postController),
+                        new AddSarcina(sarcinaController),
+                        new GetPosturi(postController),
+                        new GetSarcini(sarcinaController),
+                        new RemovePost(postController),
+                        new RemoveSarcina(sarcinaController),
+                        new UpdatePost(postController),
+                        new UpdateSarcina(sarcinaController)
+                ).collect(Collectors.toList()));
 
         return commandsList.stream().collect(Collectors.toMap(
                         (Command command) -> (command.getName()),
