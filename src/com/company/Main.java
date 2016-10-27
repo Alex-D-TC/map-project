@@ -22,8 +22,6 @@ import com.company.Utils.Commands.*;
 import com.company.Utils.Exceptions.FailedTestException;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,9 +36,9 @@ public class Main {
     private static CrudRepository<Sarcina> sarcinaRepository;
     private static CrudRepository<Post> postRepository;
 
-    private static final String USAGE = "USAGE: -[F|M] [filePath]";
+    private static final String USAGE = "USAGE: -[F|M] [taskFilePath, postFilePath]";
     private static boolean isFile;
-    private static String filePath;
+    private static String taskFilePath, postFilePath;
 
     private static void parseArguments(List<String> args) throws InvalidArgumentException {
 
@@ -62,10 +60,11 @@ public class Main {
         }
 
         if(isFile) {
-            if(args.size() <= 1) {
-                throw new InvalidArgumentException(new String[]{"filePath must be passed if -F is chosen"});
+            if(args.size() <= 2) {
+                throw new InvalidArgumentException(new String[]{USAGE, "File paths must be passed if -F is chosen"});
             }
-            filePath = args.get(2);
+            taskFilePath = args.get(1);
+            postFilePath = args.get(2);
         }
     }
 
@@ -93,43 +92,32 @@ public class Main {
     private static void buildRepositories() {
       if(isFile) {
 
-            sarcinaRepository = new FileRepository<>(filePath, (BufferedReader reader) -> {
+            sarcinaRepository = new FileRepository<>(taskFilePath, (line) -> {
                 Sarcina s = null;
 
-                try {
-                    String[] tokens = reader.readLine().split("|");
-                    int id = Integer.parseInt(tokens[0]);
-                    String description = tokens[2];
+                String[] tokens = line.split("[|]");
+                int id = Integer.parseInt(tokens[0]);
+                String description = tokens[1];
 
-                    s = new Sarcina(id, description);
-
-                }catch(IOException e) {
-                    e.printStackTrace();
-                }
+                s = new Sarcina(id, description);
 
                 return s;
-            });
+            }, (elem) -> elem.getId() + "|" + elem.getDescription());
 
-            postRepository = new FileRepository<>(filePath, (BufferedReader reader) -> {
+            postRepository = new FileRepository<>(postFilePath, (line) -> {
 
                 Post p = null;
 
-                try {
+                String[] tokens = line.split("[|]");
+                int id = Integer.parseInt(tokens[0]);
+                String name = tokens[1];
+                Post.Type type = Post.stringToType(tokens[2]);
 
-                    String[] tokens = reader.readLine().split("|");
-                    int id = Integer.parseInt(tokens[0]);
-                    String name = tokens[2];
-                    Post.Type type = Post.stringToType(tokens[3]);
-
-                    p = new Post(id, name, type);
-
-                }catch(IOException e) {
-                    e.printStackTrace();
-                }
+                p = new Post(id, name, type);
 
                 return p;
 
-            });
+            }, (elem) -> elem.getId() + "|" + elem.getName() + "|" + Post.typeToString(elem.getType()));
 
         } else {
             sarcinaRepository = new InMemoryRepository<>();

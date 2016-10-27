@@ -16,13 +16,7 @@ public class FileRepositoryTest extends CrudRepositoryTest {
     @Before
     public void setUp() {
 
-        repo = new FileRepository<>(FILE_PATH, (stream) -> {
-            try {
-                return stream.readLine();
-            }catch(IOException e) {
-                return null;
-            }
-        });
+        repo = new FileRepository<>(FILE_PATH, (line) -> (line), (elem) -> (elem));
 
     }
 

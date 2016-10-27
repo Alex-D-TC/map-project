@@ -28,7 +28,7 @@ public abstract class CrudRepository<T> {
      * @param op - The unary operator used to match items
      * @return - A list of all matched items
      */
-    public abstract List<T> get(Predicate<T> op);
+    public abstract Iterable<T> get(Predicate<T> op);
 
     /**
      * Removes a item

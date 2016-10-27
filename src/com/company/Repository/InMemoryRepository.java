@@ -32,7 +32,7 @@ public class InMemoryRepository<T> extends CrudRepository<T> {
         elems.add(s);
     }
 
-    public List<T> get(Predicate<T> check) {
+    public Iterable<T> get(Predicate<T> check) {
 
         return elems.stream().filter(check::test)
                     .collect(Collectors.toList());
@@ -40,32 +40,26 @@ public class InMemoryRepository<T> extends CrudRepository<T> {
 
     public void update(T oldT, T newT) throws ElementNotFoundException {
 
-        List<T> newElems = elems.stream()
-                .map((elem) -> (elem.equals(oldT)? newT : elem))
-                .collect(Collectors.toList());
-
-        if(newElems.equals(elems)) {
+        if(!elems.stream().anyMatch(oldT::equals)) {
             throw new ElementNotFoundException();
         }
 
-        elems = newElems;
+        elems = elems.stream()
+                .map((el) -> (el.equals(oldT)? newT : el))
+                .collect(Collectors.toList());
     }
 
    public T remove(T post) throws ElementNotFoundException {
 
-        List<T> results = elems.stream()
-                .filter((elem) -> (elem.equals(post)))
-                .collect(Collectors.toList());
+       if(!elems.stream().anyMatch(post::equals)) {
+           throw new ElementNotFoundException();
+       }
 
-        T elem;
+       T elem = elems.stream().reduce((ta, tb) -> ta.equals(post)? ta : tb).get();
 
-        if(results.size() != 0) {
-            elem = results.get(0);
-        } else {
-            throw new ElementNotFoundException();
-        }
-
-        elems.remove(elem);
+       elems = elems.stream()
+               .filter((el) -> (!el.equals(elem)))
+               .collect(Collectors.toList());
 
         return elem;
     }

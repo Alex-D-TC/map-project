@@ -46,11 +46,15 @@ public class Gui {
      * Prints the menu. Naturally
      */
     private void printMenu() {
-        System.out.println("\nCommands list:\n");
-        for(Command c : commandMap.values()) {
-            System.out.println(c.getName() + ": " + c.getDescription());
-        }
-        System.out.println("");
+
+        StringBuilder result = new StringBuilder();
+
+        commandMap.values().stream()
+                            .map((comm) -> comm.getName() + " : " + comm.getDescription() + '\n')
+                            .sorted()
+                            .forEach(result::append);
+
+        System.out.println(result.toString());
     }
 
     /**

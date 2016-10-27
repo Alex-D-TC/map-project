@@ -3,7 +3,9 @@ package com.company.Repository;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.Parser;
+import com.company.Utils.Serializer;
 
+import java.nio.file.*;
 import java.util.function.Predicate;
 
 import java.io.*;
@@ -18,25 +20,28 @@ import java.util.stream.StreamSupport;
  */
 public class FileRepository<T> extends CrudRepository<T> {
 
-    private String filePath;
+    private Path filePath;
     private Parser<T> parser;
+    private Serializer<T> serializer;
 
-    public FileRepository(String filePath, Parser<T> parser) {
-        this.filePath = filePath;
+    public FileRepository(String filePath, Parser<T> parser, Serializer<T> serializer) {
+        this.filePath = Paths.get(filePath);
         this.parser = parser;
+        this.serializer = serializer;
     }
 
     @Override
     public void add(T elem) throws ElementExistsException {
 
-        if(get((T item) -> (item.equals(elem))).size() != 0) {
+        if(StreamSupport.stream(get((T item) -> (item.equals(elem))).spliterator(), false).count() != 0) {
             throw new ElementExistsException();
         }
 
-        try(BufferedWriter writer =
-                    new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath, true)))) {
+        try {
 
-            writer.write(elem.toString() + '\n');
+            Files.write(filePath, Stream.of(elem)
+                    .map(serializer::serialize)
+                    .collect(Collectors.toList()), StandardOpenOption.APPEND);
 
         }catch(IOException e) {
             e.printStackTrace();
@@ -64,63 +69,46 @@ public class FileRepository<T> extends CrudRepository<T> {
 
     @Override
     public Iterable<T> getAll() {
+        try {
 
-        List<T> elems = new ArrayList<>();
-
-        try(BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(new FileInputStream(filePath)))) {
-
-            T elem;
-            while((elem = parser.parse(reader)) != null) {
-                elems.add(elem);
-            }
+            return Files.lines(filePath)
+                    .map(parser::parse)
+                    .collect(Collectors.toList());
 
         }catch(IOException e) {
             e.printStackTrace();
         }
 
-        return elems;
-
+        return new ArrayList<>();
     }
 
     @Override
-    public List<T> get(Predicate<T> op) {
+    public Iterable<T> get(Predicate<T> op) {
 
-        List<T> elements = new ArrayList<>();
+        try {
 
-        try(BufferedReader reader =
-                    new BufferedReader(new InputStreamReader(new FileInputStream(filePath)))) {
-
-            T elem;
-            while((elem = parser.parse(reader)) != null) {
-                if(op.test(elem)) {
-                    elements.add(elem);
-                }
-            }
+            return Files.lines(filePath)
+                    .map(parser::parse)
+                    .filter(op)
+                    .collect(Collectors.toList());
 
         }catch(IOException e ) {
             e.printStackTrace();
         }
 
-        return elements;
+        return null;
     }
 
     @Override
     public void update(T original, T newElem) throws ElementNotFoundException {
 
-        List<T> elems = StreamSupport.stream(getAll().spliterator(), false).collect(Collectors.toList());
-        int elemCount = elems.size();
-
-        elems = elems.stream()
-                .filter((elem) -> (!elem.equals(original)))
-                .collect(Collectors.toList());
-
-        if(elemCount == elems.size()) {
+        if(StreamSupport.stream(get((elem) -> (elem.equals(original))).spliterator(), false).count() == 0) {
             throw new ElementNotFoundException();
         }
 
-        elems.add(newElem);
-        writeToFile(elems);
+        writeToFile(StreamSupport.stream(getAll().spliterator(), false)
+                .map((elem) -> elem.equals(original)? newElem : elem)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -129,13 +117,10 @@ public class FileRepository<T> extends CrudRepository<T> {
      */
     private void writeToFile(List<T> elements) {
 
-        try(BufferedWriter writer =
-                    new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath)))) {
-
-            for(T elem : elements) {
-                writer.write(elem.toString());
-            }
-
+        try {
+            Files.write(filePath, elements.stream()
+                                .map(serializer::serialize)
+                                .collect(Collectors.toList()));
         }catch(IOException e) {
             e.printStackTrace();
         }

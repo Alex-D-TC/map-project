@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by AlexandruD on 10/23/2016.
@@ -44,7 +45,9 @@ public class CrudRepositoryTest {
     public void testUpdate() throws ElementExistsException, ElementNotFoundException {
         repo.add("Harambe");
         repo.update("Harambe", "The 2016 election");
-        Assert.assertArrayEquals(repo.getAll().toArray(),
+        Assert.assertArrayEquals(StreamSupport
+                .stream(repo.getAll().spliterator(), false)
+                .collect(Collectors.toList()).toArray(),
                 Stream.of("The 2016 election").collect(Collectors.toList()).toArray());
     }
 
@@ -60,7 +63,9 @@ public class CrudRepositoryTest {
         repo.add("Alex Jones");
         repo.add("Deez cojones");
 
-        Assert.assertEquals("Harambe", repo.get((string) -> (string.equals("Harambe"))).get(0));
+        Assert.assertEquals("Harambe",
+                StreamSupport.stream(repo.get((string) -> (string.equals("Harambe"))).spliterator(), false)
+                            .reduce((a, b) -> (a.equals("Harambe")? a : b)).get());
     }
 
 }

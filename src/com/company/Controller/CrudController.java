@@ -62,7 +62,7 @@ public abstract class CrudController<T> {
      * Returns all elements
      * @return - The list of all elements
      */
-    public List<T> getAll() {
+    public Iterable<T> getAll() {
         return repo.getAll();
     }
 
@@ -71,7 +71,7 @@ public abstract class CrudController<T> {
      * @param op - The predicate
      * @return - A list of all matching elements
      */
-    public List<T> get(Predicate<T> op) {
+    public Iterable<T> get(Predicate<T> op) {
         return repo.get(op);
     }
 

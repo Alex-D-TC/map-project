@@ -14,10 +14,9 @@ public class GetPosturi extends Command {
         super("Get posts", "Gets all posts", () -> {
 
             StringBuilder resString = new StringBuilder("Posturi:\n");
-            List<Post> posturi = postController.getAll();
-            for(int i = 0; i < posturi.size(); ++i) {
-                resString.append(posturi.get(i).toString() + '\n');
-            }
+
+            postController.getAll().forEach((post) -> resString.append(post.toString() + '\n'));
+
             return resString.toString();
 
         });
