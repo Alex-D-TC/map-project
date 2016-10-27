@@ -21,7 +21,7 @@ public abstract class CrudRepository<T> {
      * Gets all items
      * @return - A list of all posts
      */
-    public abstract List<T> getAll();
+    public abstract Iterable<T> getAll();
 
     /**
      * Gets all items matching the given unary operator

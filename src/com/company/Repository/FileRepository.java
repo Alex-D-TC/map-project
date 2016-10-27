@@ -10,6 +10,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by AlexandruD on 10/14/2016.
@@ -45,7 +47,7 @@ public class FileRepository<T> extends CrudRepository<T> {
     @Override
     public T remove(T rElem) throws ElementNotFoundException {
 
-        List<T> readItems = getAll();
+        List<T> readItems = StreamSupport.stream(getAll().spliterator(), false).collect(Collectors.toList());
 
         int index = readItems.indexOf(rElem);
 
@@ -61,7 +63,7 @@ public class FileRepository<T> extends CrudRepository<T> {
     }
 
     @Override
-    public List<T> getAll() {
+    public Iterable<T> getAll() {
 
         List<T> elems = new ArrayList<>();
 
@@ -106,7 +108,7 @@ public class FileRepository<T> extends CrudRepository<T> {
     @Override
     public void update(T original, T newElem) throws ElementNotFoundException {
 
-        List<T> elems = getAll();
+        List<T> elems = StreamSupport.stream(getAll().spliterator(), false).collect(Collectors.toList());
         int elemCount = elems.size();
 
         elems = elems.stream()
