@@ -5,7 +5,7 @@ package com.company.Utils.Exceptions;
  */
 public class ElementExistsException extends Exception {
 
-    private static final String MESSAGE = "The element does not exist";
+    private static final String MESSAGE = "The element already exists";
 
     @Override
     public String getMessage() {

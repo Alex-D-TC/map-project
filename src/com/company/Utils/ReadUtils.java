@@ -123,6 +123,7 @@ public class ReadUtils {
                 scanner.nextLine();
             }catch(InputMismatchException e) {
                 System.out.println("Invalid value");
+                scanner.nextLine();
             }
         }while(res == null);
         return res;

@@ -40,6 +40,11 @@ public class Main {
     private static boolean isFile;
     private static String taskFilePath, postFilePath;
 
+    /**
+     * Parses the command-line arguments
+     * @param args - The args
+     * @throws InvalidArgumentException
+     */
     private static void parseArguments(List<String> args) throws InvalidArgumentException {
 
         if(args.size() == 0) {
@@ -89,6 +94,9 @@ public class Main {
                         (Command command) -> (command)));
     }
 
+    /**
+     * Constructs the repositories
+     */
     private static void buildRepositories() {
       if(isFile) {
 
@@ -126,6 +134,9 @@ public class Main {
 
     }
 
+    /**
+     * Constructs the controllers
+     */
     private static void buildControllers() {
         postController =
                 new PostController(postRepository, new PostValidator());
@@ -135,6 +146,10 @@ public class Main {
 
     }
 
+    /**
+     * I think it's a utility function...
+     * @param args
+     */
     public static void main(String[] args) {
 
         try {
