@@ -52,7 +52,8 @@ public class FileRepository<T> extends CrudRepository<T> {
     @Override
     public T remove(T rElem) throws ElementNotFoundException {
 
-        List<T> readItems = StreamSupport.stream(getAll().spliterator(), false).collect(Collectors.toList());
+        List<T> readItems = StreamSupport.stream(getAll().spliterator(), false)
+                                        .collect(Collectors.toList());
 
         int index = readItems.indexOf(rElem);
 

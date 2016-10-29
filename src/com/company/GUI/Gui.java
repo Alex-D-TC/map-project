@@ -24,7 +24,7 @@ public class Gui {
     public void start() {
         String option;
 
-        while(1 == 1) {
+        while(true) {
 
             Command c = null;
 
