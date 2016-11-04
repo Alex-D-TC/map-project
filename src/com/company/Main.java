@@ -104,8 +104,20 @@ public class Main {
                 Sarcina s = null;
 
                 String[] tokens = line.split("[|]");
-                int id = Integer.parseInt(tokens[0]);
-                String description = tokens[1];
+
+                if(tokens.length != 2) {
+                    return null;
+                }
+
+                int id;
+                String description;
+
+                try {
+                    id = Integer.parseInt(tokens[0]);
+                    description = tokens[1];
+                } catch(NumberFormatException e) {
+                    return null;
+                }
 
                 s = new Sarcina(id, description);
 
@@ -117,9 +129,25 @@ public class Main {
                 Post p = null;
 
                 String[] tokens = line.split("[|]");
-                int id = Integer.parseInt(tokens[0]);
+
+                if(tokens.length != 3) {
+                    return null;
+                }
+
+                int id;
+
+                try {
+                    id = Integer.parseInt(tokens[0]);
+                }catch(NumberFormatException e) {
+                    return null;
+                }
+
                 String name = tokens[1];
                 Post.Type type = Post.stringToType(tokens[2]);
+
+                if(type == null) {
+                    return null;
+                }
 
                 p = new Post(id, name, type);
 

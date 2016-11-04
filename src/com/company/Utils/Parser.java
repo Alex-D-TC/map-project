@@ -5,5 +5,10 @@ package com.company.Utils;
  */
 public interface Parser<T> {
 
+    /**
+     * Parses a line to deserialize an element
+     * @param line - The line to parse
+     * @return The element if parsing succeeds, null otherwise
+     */
     T parse(String line);
 }

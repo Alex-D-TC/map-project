@@ -1,9 +1,11 @@
 package com.company.Domain;
 
+import java.io.Serializable;
+
 /**
  * Created by AlexandruD on 10/8/2016.
  */
-public class Sarcina {
+public class Sarcina implements Serializable {
 
     private int id;
     private String description;

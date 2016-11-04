@@ -23,11 +23,13 @@ public class FileRepository<T> extends CrudRepository<T> {
     private Path filePath;
     private Parser<T> parser;
     private Serializer<T> serializer;
+    private final String serializedPath;
 
     public FileRepository(String filePath, Parser<T> parser, Serializer<T> serializer) {
         this.filePath = Paths.get(filePath);
         this.parser = parser;
         this.serializer = serializer;
+        serializedPath = filePath + "_serialized.txt";
     }
 
     @Override
@@ -74,6 +76,7 @@ public class FileRepository<T> extends CrudRepository<T> {
 
             return Files.lines(filePath)
                     .map(parser::parse)
+                    .filter((elem) -> (elem != null)) // Our parser can return null
                     .collect(Collectors.toList());
 
         }catch(IOException e) {
@@ -90,6 +93,7 @@ public class FileRepository<T> extends CrudRepository<T> {
 
             return Files.lines(filePath)
                     .map(parser::parse)
+                    .filter((elem) -> (elem != null)) // Our parser can return null
                     .filter(op)
                     .collect(Collectors.toList());
 
@@ -122,6 +126,25 @@ public class FileRepository<T> extends CrudRepository<T> {
             Files.write(filePath, elements.stream()
                                 .map(serializer::serialize)
                                 .collect(Collectors.toList()));
+            serializeAll(elements);
+        }catch(IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void serializeAll(List<T> elements) {
+
+        try(ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(serializedPath))) {
+
+            elements.forEach((elem) -> {
+                try {
+                    stream.writeObject(elem);
+                }catch(IOException e) {
+                    e.printStackTrace();
+                }
+                });
+
         }catch(IOException e) {
             e.printStackTrace();
         }

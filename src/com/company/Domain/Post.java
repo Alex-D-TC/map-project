@@ -1,5 +1,6 @@
 package com.company.Domain;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -7,13 +8,13 @@ import java.util.stream.Stream;
 /**
  * Created by AlexandruD on 10/8/2016.
  */
-public class Post {
+public class Post implements Serializable {
 
     private int id;
     private String name;
     private Type type;
 
-    public enum Type {
+    public enum Type implements Serializable {
         FULLTIME,
         PARTTIME
     }

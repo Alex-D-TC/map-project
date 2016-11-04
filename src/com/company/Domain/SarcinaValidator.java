@@ -9,7 +9,7 @@ public class SarcinaValidator extends Validator<Sarcina> {
     @Override
     public boolean validate(Sarcina s) {
         // Don't have much to validate bo$$
-        return s.getId() < 0;
+        return !(s.getId() < 0);
     }
 
 }

@@ -5,6 +5,11 @@ package com.company.Utils;
  */
 public interface Serializer<T> {
 
+    /**
+     * Produces the string representation of an object. Used for custom serialization
+     * @param elem - The object to file
+     * @return - The string representation
+     */
     String serialize(T elem);
 
 }
