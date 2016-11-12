@@ -11,7 +11,7 @@ import java.util.List;
 public class GetPosturi extends Command {
 
     public GetPosturi(PostController postController) {
-        super("Get posts", "Gets all posts", () -> {
+        super("Get positions", "Gets all positions", () -> {
 
             StringBuilder resString = new StringBuilder("Posturi:\n");
 

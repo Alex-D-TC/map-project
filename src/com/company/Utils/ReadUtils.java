@@ -1,5 +1,6 @@
 package com.company.Utils;
 
+import com.company.Domain.FisaPostElemDTO;
 import com.company.Domain.Post;
 import com.company.Domain.Sarcina;
 
@@ -46,6 +47,19 @@ public class ReadUtils {
     public static String readString(Scanner scanner, String message) {
         System.out.print(message + " ");
         return scanner.nextLine();
+    }
+
+    /**
+     * Reads a {@link FisaPostElemDTO} from the scanner
+     * @param scanner The scanner to read from
+     * @return The read {@link FisaPostElemDTO}
+     */
+    public static FisaPostElemDTO readFisaPostElem(Scanner scanner) {
+
+        int postID = readInt(scanner, "Input position id: "),
+            sarcinaID = readInt(scanner, "Input task id: ");
+
+        return new FisaPostElemDTO(postID, sarcinaID);
     }
 
     /**
@@ -106,8 +120,6 @@ public class ReadUtils {
 
         return new Post(-1, name, type);
     }
-
-
 
     /**
      * Reads an {@link Integer} from the standard input. Does not exit until a valid integer is inputted.

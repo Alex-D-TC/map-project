@@ -43,7 +43,11 @@ public class FileRepository<T> extends CrudRepository<T> {
 
             Files.write(filePath, Stream.of(elem)
                     .map(serializer::serialize)
-                    .collect(Collectors.toList()), StandardOpenOption.APPEND);
+                    .collect(Collectors.toList()),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND);
+
+            serializeElement(elem);
 
         }catch(IOException e) {
             e.printStackTrace();
@@ -79,6 +83,8 @@ public class FileRepository<T> extends CrudRepository<T> {
                     .filter((elem) -> (elem != null)) // Our parser can return null
                     .collect(Collectors.toList());
 
+        }catch(NoSuchFileException e) {
+            return new ArrayList<>();
         }catch(IOException e) {
             e.printStackTrace();
         }
@@ -97,6 +103,8 @@ public class FileRepository<T> extends CrudRepository<T> {
                     .filter(op)
                     .collect(Collectors.toList());
 
+        }catch(NoSuchFileException e) {
+            return new ArrayList<>();
         }catch(IOException e ) {
             e.printStackTrace();
         }
@@ -133,6 +141,31 @@ public class FileRepository<T> extends CrudRepository<T> {
 
     }
 
+    /**
+     * Adds a single serialized element to the file
+     * @param elem - The element
+     */
+    private void serializeElement(T elem) {
+
+        if(!Files.exists(Paths.get(serializedPath))) {
+            try {
+                Files.createFile(Paths.get(serializedPath));
+            }catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try(ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(serializedPath, true))) {
+
+        }catch(IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Serializes a list of elements to the file
+     * @param elements The elements to serialize
+     */
     private void serializeAll(List<T> elements) {
 
         try(ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(serializedPath))) {

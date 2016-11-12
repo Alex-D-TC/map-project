@@ -10,7 +10,6 @@ import com.company.Repository.CrudRepository;
  */
 public class PostController extends CrudController<Post> {
 
-
     public PostController(CrudRepository<Post> repo, Validator<Post> validator) {
         super(repo, validator);
     }

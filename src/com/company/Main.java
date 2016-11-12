@@ -7,12 +7,10 @@ package com.company;
 // Validate input. Comment muh code. Test stuff
 // PROBLEM 3
 
+import com.company.Controller.FisaPostMediator;
 import com.company.Controller.PostController;
 import com.company.Controller.SarcinaController;
-import com.company.Domain.Post;
-import com.company.Domain.PostValidator;
-import com.company.Domain.Sarcina;
-import com.company.Domain.SarcinaValidator;
+import com.company.Domain.*;
 import com.company.GUI.Gui;
 import com.company.Repository.FileRepository;
 import com.company.Repository.InMemoryRepository;
@@ -31,14 +29,16 @@ import java.util.stream.Stream;
  */
 public class Main {
 
+    private static FisaPostMediator fisaPostMediator;
     private static PostController postController;
     private static SarcinaController sarcinaController;
+    private static CrudRepository<FisaPostElemDTO> fisaPostRepository;
     private static CrudRepository<Sarcina> sarcinaRepository;
     private static CrudRepository<Post> postRepository;
 
-    private static final String USAGE = "USAGE: -[F|M] [taskFilePath, postFilePath]";
+    private static final String USAGE = "USAGE: -[F|M] [taskFilePath, postFilePath, jobDescriptFilePath]";
     private static boolean isFile;
-    private static String taskFilePath, postFilePath;
+    private static String taskFilePath, postFilePath, fisaPostFilePath;
 
     /**
      * Parses the command-line arguments
@@ -65,28 +65,34 @@ public class Main {
         }
 
         if(isFile) {
-            if(args.size() <= 2) {
+            if(args.size() <= 3) {
                 throw new InvalidArgumentException(new String[]{USAGE, "File paths must be passed if -F is chosen"});
             }
             taskFilePath = args.get(1);
             postFilePath = args.get(2);
+            fisaPostFilePath = args.get(3);
         }
     }
 
     private static Map<String, Command> buildCommandMap(PostController postController,
-                                                        SarcinaController sarcinaController) {
+                                                        SarcinaController sarcinaController,
+                                                        FisaPostMediator fisaPostMediator) {
 
         List<Command> commandsList = new ArrayList<>(
                 Stream.of(
                         new QuitCommand(),
                         new AddPost(postController),
+                        new AddFisaPostElem(fisaPostMediator),
                         new AddSarcina(sarcinaController),
                         new GetPosturi(postController),
                         new GetSarcini(sarcinaController),
+                        new GetFisaPost(fisaPostMediator),
+                        new RemoveFisaPostElem(fisaPostMediator),
                         new RemovePost(postController),
                         new RemoveSarcina(sarcinaController),
                         new UpdatePost(postController),
-                        new UpdateSarcina(sarcinaController)
+                        new UpdateSarcina(sarcinaController),
+                        new TopTasks(fisaPostMediator)
                 ).collect(Collectors.toList()));
 
         return commandsList.stream().collect(Collectors.toMap(
@@ -155,9 +161,30 @@ public class Main {
 
             }, (elem) -> elem.getId() + "|" + elem.getName() + "|" + Post.typeToString(elem.getType()));
 
+            fisaPostRepository = new FileRepository<>(fisaPostFilePath, (line) -> {
+                String[] lineSplit = line.split("[|]");
+
+                if(lineSplit.length != 2)
+                    return null;
+
+                try {
+
+                    int postID = Integer.parseInt(lineSplit[0]),
+                        taskID = Integer.parseInt(lineSplit[1]);
+
+                        return new FisaPostElemDTO(postID, taskID);
+
+                }catch(NumberFormatException e) {
+                    return null;
+                }
+
+
+            }, (elem) -> elem.getPostID() + "|" + elem.getSarcinaID());
+
         } else {
             sarcinaRepository = new InMemoryRepository<>();
             postRepository = new InMemoryRepository<>();
+            fisaPostRepository = new InMemoryRepository<>();
         }
 
     }
@@ -171,6 +198,10 @@ public class Main {
 
         sarcinaController =
                 new SarcinaController(sarcinaRepository, new SarcinaValidator());
+
+        fisaPostMediator =
+                new FisaPostMediator(fisaPostRepository, new FisaPostElemDTOValidator(),
+                                      postController, sarcinaController);
 
     }
 
@@ -198,7 +229,8 @@ public class Main {
         buildRepositories();
         buildControllers();
 
-        Map<String, Command> commandMap = buildCommandMap(postController, sarcinaController);
+        Map<String, Command> commandMap = buildCommandMap(
+                postController, sarcinaController, fisaPostMediator);
 
         Gui g = new Gui(commandMap);
         g.start();

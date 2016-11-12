@@ -5,7 +5,15 @@ package com.company.Utils.Exceptions;
  */
 public class ElementNotFoundException extends Exception {
 
-    private static final String MESSAGE = "The element does not exist";
+    private final String MESSAGE;
+
+    public ElementNotFoundException() {
+        MESSAGE = "The element does not exist";
+    }
+
+    public ElementNotFoundException(String message) {
+        MESSAGE = message;
+    }
 
     @Override
     public String getMessage() {
