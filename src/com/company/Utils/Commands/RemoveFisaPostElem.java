@@ -1,7 +1,6 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.FisaPostMediator;
-import com.company.Domain.FisaPostElem;
+import com.company.Service.FisaPostService;
 import com.company.Domain.FisaPostElemDTO;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.IOUtils;
@@ -14,7 +13,7 @@ import java.util.NoSuchElementException;
  */
 public class RemoveFisaPostElem extends Command {
 
-    public RemoveFisaPostElem(FisaPostMediator mediator) {
+    public RemoveFisaPostElem(FisaPostService mediator) {
 
         super("Remove JD element", "Removes a job description element", () -> {
 

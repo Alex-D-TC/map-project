@@ -5,6 +5,11 @@ package com.company.Domain;
  */
 public abstract class Validator<T> {
 
+    /**
+     * Validates an object
+     * @param obj The object to validate
+     * @return true if the object is valid, false otherwise
+     */
     public abstract boolean validate(T obj);
 
 }

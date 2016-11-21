@@ -1,6 +1,6 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.PostController;
+import com.company.Service.PostService;
 import com.company.Domain.Post;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.IOUtils;
@@ -13,7 +13,7 @@ import javax.xml.bind.ValidationException;
  */
 public class UpdatePost extends Command {
 
-    public UpdatePost(PostController postController) {
+    public UpdatePost(PostService postController) {
 
         super("Update position", "Updates a position", () -> {
 

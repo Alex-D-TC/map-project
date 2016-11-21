@@ -5,7 +5,7 @@ package com.company.Utils.Exceptions;
  */
 public class FailedTestException extends Exception {
 
-    private static final String MESSAGE = "One or more tests has failed... Consult error log... Bitch";
+    private static final String MESSAGE = "One or more tests has failed... Consult error log...";
 
     @Override
     public String getMessage() {

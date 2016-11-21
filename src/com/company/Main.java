@@ -7,17 +7,15 @@ package com.company;
 // Validate input. Comment muh code. Test stuff
 // PROBLEM 3
 
-import com.company.Controller.FisaPostMediator;
-import com.company.Controller.PostController;
-import com.company.Controller.SarcinaController;
+import com.company.Service.FisaPostService;
+import com.company.Service.PostService;
+import com.company.Service.SarcinaService;
 import com.company.Domain.*;
 import com.company.GUI.Gui;
 import com.company.Repository.FileRepository;
 import com.company.Repository.InMemoryRepository;
 import com.company.Repository.CrudRepository;
-import com.company.Tests.TestRunner;
 import com.company.Utils.Commands.*;
-import com.company.Utils.Exceptions.FailedTestException;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.util.*;
@@ -29,23 +27,23 @@ import java.util.stream.Stream;
  */
 public class Main {
 
-    private static FisaPostMediator fisaPostMediator;
-    private static PostController postController;
-    private static SarcinaController sarcinaController;
-    private static CrudRepository<FisaPostElemDTO> fisaPostRepository;
-    private static CrudRepository<Sarcina> sarcinaRepository;
-    private static CrudRepository<Post> postRepository;
+    public static FisaPostService fisaPostService;
+    public static PostService postService;
+    public static SarcinaService sarcinaService;
+    public static CrudRepository<FisaPostElemDTO> fisaPostRepository;
+    public static CrudRepository<Sarcina> sarcinaRepository;
+    public static CrudRepository<Post> postRepository;
 
-    private static final String USAGE = "USAGE: -[F|M] [taskFilePath, postFilePath, jobDescriptFilePath]";
-    private static boolean isFile;
-    private static String taskFilePath, postFilePath, fisaPostFilePath;
+    public static final String USAGE = "USAGE: -[F|M] [taskFilePath, postFilePath, jobDescriptFilePath]";
+    public static boolean isFile;
+    public static String taskFilePath, postFilePath, fisaPostFilePath;
 
     /**
      * Parses the command-line arguments
      * @param args - The args
      * @throws InvalidArgumentException
      */
-    private static void parseArguments(List<String> args) throws InvalidArgumentException {
+    public static void parseArguments(List<String> args) throws InvalidArgumentException {
 
         if(args.size() == 0) {
             throw new InvalidArgumentException(null);
@@ -58,11 +56,7 @@ public class Main {
             throw new InvalidArgumentException(null);
         }
 
-        if(options.contains("F")) {
-            isFile = true;
-        } else {
-            isFile = false;
-        }
+        isFile = options.contains("F");
 
         if(isFile) {
             if(args.size() <= 3) {
@@ -74,36 +68,43 @@ public class Main {
         }
     }
 
-    private static Map<String, Command> buildCommandMap(PostController postController,
-                                                        SarcinaController sarcinaController,
-                                                        FisaPostMediator fisaPostMediator) {
+    private static Map<String, Command> buildCommandMap(PostService postController,
+                                                        SarcinaService sarcinaController,
+                                                        FisaPostService fisaPostService) {
 
         List<Command> commandsList = new ArrayList<>(
                 Stream.of(
                         new QuitCommand(),
                         new AddPost(postController),
-                        new AddFisaPostElem(fisaPostMediator),
+                        new AddFisaPostElem(fisaPostService),
                         new AddSarcina(sarcinaController),
                         new GetPosturi(postController),
                         new GetSarcini(sarcinaController),
-                        new GetFisaPost(fisaPostMediator),
-                        new RemoveFisaPostElem(fisaPostMediator),
+                        new GetFisaPost(fisaPostService),
+                        new RemoveFisaPostElem(fisaPostService),
                         new RemovePost(postController),
                         new RemoveSarcina(sarcinaController),
                         new UpdatePost(postController),
                         new UpdateSarcina(sarcinaController),
-                        new TopTasks(fisaPostMediator)
+                        new TopTasks(fisaPostService),
+                        new GetTasksBySubstring(sarcinaController),
+                        new GetTasksByID(sarcinaController),
+                        new GetTasksSortedByID(sarcinaController),
+                        new GetPositionsBySubstring(postController),
+                        new GetPositionsByType(postController),
+                        new GetPositionsSortedByID(postController)
                 ).collect(Collectors.toList()));
 
-        return commandsList.stream().collect(Collectors.toMap(
-                        (Command command) -> (command.getName()),
-                        (Command command) -> (command)));
+        return commandsList.stream()
+                            .collect(Collectors.toMap(
+                            (Command command) -> (command.getName()),
+                            (Command command) -> (command)));
     }
 
     /**
      * Constructs the repositories
      */
-    private static void buildRepositories() {
+    public static void buildRepositories() {
       if(isFile) {
 
             sarcinaRepository = new FileRepository<>(taskFilePath, (line) -> {
@@ -192,24 +193,20 @@ public class Main {
     /**
      * Constructs the controllers
      */
-    private static void buildControllers() {
-        postController =
-                new PostController(postRepository, new PostValidator());
+    public static void buildServices() {
+        postService =
+                new PostService(postRepository, new PostValidator());
 
-        sarcinaController =
-                new SarcinaController(sarcinaRepository, new SarcinaValidator());
+        sarcinaService =
+                new SarcinaService(sarcinaRepository, new SarcinaValidator());
 
-        fisaPostMediator =
-                new FisaPostMediator(fisaPostRepository, new FisaPostElemDTOValidator(),
-                                      postController, sarcinaController);
+        fisaPostService =
+                new FisaPostService(fisaPostRepository, new FisaPostElemDTOValidator(),
+                        postService, sarcinaService);
 
     }
 
-    /**
-     * I think it's a utility function...
-     * @param args
-     */
-    public static void main(String[] args) {
+    public static void prepMain(String[] args) {
 
         try {
             parseArguments(Arrays.asList(args));
@@ -218,19 +215,32 @@ public class Main {
             System.exit(1);
         }
 
-        TestRunner runner = new TestRunner();
-        try {
-            runner.run();
-        }catch(FailedTestException e) {
-            System.err.println(e.getMessage());
-            return;
-        }
+        /** Tests
+         *
+         TestRunner runner = new TestRunner();
+         try {
+         runner.run();
+         }catch(FailedTestException e) {
+         System.err.println(e.getMessage());
+         return;
+         }
+         */
+
 
         buildRepositories();
-        buildControllers();
+        buildServices();
+    }
 
+    /**
+     * I think it's a utility function...
+     * @param args Arguments
+     */
+    public static void main(String[] args) {
+
+        prepMain(args);
+        
         Map<String, Command> commandMap = buildCommandMap(
-                postController, sarcinaController, fisaPostMediator);
+                postService, sarcinaService, fisaPostService);
 
         Gui g = new Gui(commandMap);
         g.start();

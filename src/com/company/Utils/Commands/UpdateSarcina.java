@@ -1,6 +1,6 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.SarcinaController;
+import com.company.Service.SarcinaService;
 import com.company.Domain.Sarcina;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.IOUtils;
@@ -13,7 +13,7 @@ import javax.xml.bind.ValidationException;
  */
 public class UpdateSarcina extends Command {
 
-    public UpdateSarcina(SarcinaController sarcinaController) {
+    public UpdateSarcina(SarcinaService sarcinaController) {
 
         super("Update task", "Updates a task", () -> {
 

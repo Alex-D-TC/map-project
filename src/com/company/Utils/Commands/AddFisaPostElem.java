@@ -1,8 +1,7 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.FisaPostMediator;
+import com.company.Service.FisaPostService;
 import com.company.Utils.Exceptions.ElementExistsException;
-import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.IOUtils;
 import com.company.Utils.ReadUtils;
 
@@ -13,7 +12,7 @@ import javax.xml.bind.ValidationException;
  */
 public class AddFisaPostElem extends Command {
 
-    public AddFisaPostElem(FisaPostMediator mediator) {
+    public AddFisaPostElem(FisaPostService mediator) {
 
         super("Add JD element", "Adds a job description element", () -> {
 

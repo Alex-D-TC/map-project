@@ -1,12 +1,14 @@
-package com.company.Controller;
+package com.company.Service;
 
 import com.company.Domain.*;
 import com.company.Repository.CrudRepository;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
+import javafx.beans.*;
 
 import javax.xml.bind.ValidationException;
 import java.util.*;
+import java.util.Observable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -14,13 +16,13 @@ import java.util.stream.StreamSupport;
 /**
  * Created by AlexandruD on 11/9/2016.
  */
-public class FisaPostMediator extends CrudController<FisaPostElemDTO> {
+public class FisaPostService extends CrudService<FisaPostElemDTO> {
 
-    private PostController postController;
-    private SarcinaController sarcinaController;
+    private PostService postController;
+    private SarcinaService sarcinaController;
 
-    public FisaPostMediator(CrudRepository<FisaPostElemDTO> repo, Validator<FisaPostElemDTO> validator,
-                            PostController postController, SarcinaController sarcinaController) {
+    public FisaPostService(CrudRepository<FisaPostElemDTO> repo, Validator<FisaPostElemDTO> validator,
+                           PostService postController, SarcinaService sarcinaController) {
         super(repo, validator);
         this.postController = postController;
         this.sarcinaController = sarcinaController;

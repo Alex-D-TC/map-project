@@ -4,6 +4,7 @@ import com.company.Repository.CrudRepository;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.stream.Collectors;
@@ -13,6 +14,7 @@ import java.util.stream.StreamSupport;
 /**
  * Created by AlexandruD on 10/23/2016.
  */
+@Ignore
 public class CrudRepositoryTest {
 
     protected CrudRepository<String> repo;

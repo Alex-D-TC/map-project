@@ -1,6 +1,6 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.SarcinaController;
+import com.company.Service.SarcinaService;
 import com.company.Domain.Sarcina;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.IOUtils;
@@ -11,7 +11,7 @@ import com.company.Utils.ReadUtils;
  */
 public class RemoveSarcina extends Command {
 
-    public RemoveSarcina(SarcinaController sarcinaController) {
+    public RemoveSarcina(SarcinaService sarcinaController) {
 
         super("Remove task", "Removes a task", () -> {
 

@@ -1,6 +1,6 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.FisaPostMediator;
+import com.company.Service.FisaPostService;
 import com.company.Domain.Sarcina;
 
 import java.util.List;
@@ -11,14 +11,14 @@ import java.util.StringJoiner;
  */
 public class TopTasks extends Command {
 
-    public TopTasks(FisaPostMediator mediator) {
+    public TopTasks(FisaPostService mediator) {
         super("Top tasks", "Gets the top 3 assigned tasks among all JD elements", () -> {
 
             List<Sarcina> tasks = mediator.topTasks();
 
             StringJoiner joiner = new StringJoiner("\n");
 
-            tasks.forEach((elem) -> {joiner.add(elem.toString());});
+            tasks.forEach((elem) -> joiner.add(elem.toString()));
 
             return joiner.toString();
         });

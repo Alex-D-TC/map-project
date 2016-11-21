@@ -1,16 +1,13 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.SarcinaController;
-import com.company.Domain.Sarcina;
-
-import java.util.List;
+import com.company.Service.SarcinaService;
 
 /**
  * Created by AlexandruD on 10/14/2016.
  */
 public class GetSarcini extends Command {
 
-    public GetSarcini(SarcinaController sarcinaController) {
+    public GetSarcini(SarcinaService sarcinaController) {
 
         super("Get tasks", "Gets all tasks", () -> {
 

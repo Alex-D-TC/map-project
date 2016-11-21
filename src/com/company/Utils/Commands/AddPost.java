@@ -1,6 +1,6 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.PostController;
+import com.company.Service.PostService;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.IOUtils;
 import com.company.Utils.ReadUtils;
@@ -12,7 +12,7 @@ import javax.xml.bind.ValidationException;
  */
 public class AddPost extends Command {
 
-    public AddPost(PostController postController) {
+    public AddPost(PostService postController) {
 
         super("Add position", "Adds a position", () -> {
 

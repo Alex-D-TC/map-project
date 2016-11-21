@@ -1,6 +1,6 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.FisaPostMediator;
+import com.company.Service.FisaPostService;
 import com.company.Domain.Sarcina;
 import com.company.Utils.IOUtils;
 import com.company.Utils.ReadUtils;
@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
  */
 public class GetFisaPost extends Command {
 
-    public GetFisaPost(FisaPostMediator mediator) {
+    public GetFisaPost(FisaPostService mediator) {
 
         super("Get job description", "Gets the job description of a position", () -> {
 

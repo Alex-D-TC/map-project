@@ -1,4 +1,4 @@
-package com.company.Controller;
+package com.company.Service;
 
 import com.company.Domain.Validator;
 import com.company.Repository.CrudRepository;
@@ -6,20 +6,23 @@ import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 
 import javax.xml.bind.ValidationException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Created by AlexandruD on 10/23/2016.
  */
-public abstract class CrudController<T> {
+public abstract class CrudService<T> {
 
     private CrudRepository<T> repo;
     private Validator<T> validator;
 
 
-    public CrudController(CrudRepository<T> repo,
-                          Validator<T> validator) {
+    public CrudService(CrudRepository<T> repo,
+                       Validator<T> validator) {
         this.repo = repo;
         this.validator = validator;
     }
@@ -75,5 +78,27 @@ public abstract class CrudController<T> {
         return repo.get(op);
     }
 
+    /**
+     * Sorts a list of elements using the given comparator
+     * @param elems The elements
+     * @param comparator The comparator
+     * @return The sorted list
+     */
+    public Iterable<T> getSorted(Iterable<T> elems, Comparator<T> comparator) {
+        return StreamSupport.stream(elems.spliterator(), false)
+                .sorted(comparator)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the elements of the repository sorted by the given comparator
+     * @param comparator The comparator
+     * @return The sorted elements of the repository
+     */
+    public Iterable<T> getSorted(Comparator<T> comparator) {
+        return StreamSupport.stream(getAll().spliterator(), false)
+                .sorted(comparator)
+                .collect(Collectors.toList());
+    }
 
 }

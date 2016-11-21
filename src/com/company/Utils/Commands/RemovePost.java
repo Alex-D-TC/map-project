@@ -1,6 +1,6 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.PostController;
+import com.company.Service.PostService;
 import com.company.Domain.Post;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.company.Utils.IOUtils;
@@ -11,7 +11,7 @@ import com.company.Utils.ReadUtils;
  */
 public class RemovePost extends Command {
 
-    public RemovePost(PostController postController) {
+    public RemovePost(PostService postController) {
 
         super("Remove position", "Removes a position", () -> {
 

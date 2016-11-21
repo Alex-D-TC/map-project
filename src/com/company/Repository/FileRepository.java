@@ -156,7 +156,7 @@ public class FileRepository<T> extends CrudRepository<T> {
         }
 
         try(ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(serializedPath, true))) {
-
+            stream.writeObject(elem);
         }catch(IOException e) {
             e.printStackTrace();
         }

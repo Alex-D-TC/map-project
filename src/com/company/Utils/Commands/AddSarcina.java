@@ -1,6 +1,6 @@
 package com.company.Utils.Commands;
 
-import com.company.Controller.SarcinaController;
+import com.company.Service.SarcinaService;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.IOUtils;
 import com.company.Utils.ReadUtils;
@@ -12,7 +12,7 @@ import javax.xml.bind.ValidationException;
  */
 public class AddSarcina extends Command {
 
-    public AddSarcina(SarcinaController sarcinaController) {
+    public AddSarcina(SarcinaService sarcinaController) {
 
         super("Add task", "Adds a task", () -> {
 
