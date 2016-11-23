@@ -4,8 +4,10 @@ package com.company;
  * Created by AlexandruD on 11/20/2016.
  */
 
+import com.company.Controller.SarcinaController;
 import com.company.Service.CrudService;
 import com.company.Service.ObservableCrudService;
+import com.company.View.SarcinaView;
 import com.company.View.View;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -100,5 +102,16 @@ public class App extends Application {
         primaryStage.setTitle("Positions");
         primaryStage.setScene(positionsScene);
         primaryStage.show();
+
+
+        Stage taskStage = new Stage();
+
+        taskStage.setTitle("Tasks");
+
+        SarcinaView taskView = new SarcinaView(new SarcinaController(Main.sarcinaService));
+
+        taskStage.setScene(new Scene(taskView.getView()));
+        taskStage.show();
+
     }
 }
