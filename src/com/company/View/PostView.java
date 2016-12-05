@@ -5,14 +5,12 @@ import com.company.Domain.Post;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.sun.javafx.collections.ObservableListWrapper;
-import com.sun.org.apache.xpath.internal.operations.Number;
 import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
 import javax.xml.bind.ValidationException;
@@ -29,19 +27,19 @@ public class PostView implements Initializable, View<PostController> {
     private PostController controller;
 
     @FXML
-    public TableView<Post> main_table;
+    private TableView<Post> main_table;
 
     @FXML
-    public TableColumn<Post, Integer> main_table_column_id;
+    private TableColumn<Post, Integer> main_table_column_id;
 
     @FXML
-    public TableColumn<Post, String> main_table_column_name;
+    private TableColumn<Post, String> main_table_column_name;
 
     @FXML
-    public TableColumn<Post, Post.Type> main_table_column_type;
+    private TableColumn<Post, Post.Type> main_table_column_type;
 
     @FXML
-    public TextField textfield_main_id,
+    private TextField textfield_main_id,
                      textfield_main_name,
                      textfield_add_id,
                      textfield_add_name,
@@ -49,12 +47,12 @@ public class PostView implements Initializable, View<PostController> {
                      textfield_update_name;
 
     @FXML
-    public ComboBox<Post.Type> combobox_main_type,
+    private ComboBox<Post.Type> combobox_main_type,
                                combobox_add_type,
                                combobox_update_type;
 
     @FXML
-    public Button btn_add_ok,
+    private Button btn_add_ok,
                   btn_add_cancel,
                   btn_main_add,
                   btn_main_update,
@@ -63,10 +61,7 @@ public class PostView implements Initializable, View<PostController> {
                   btn_update_cancel;
 
     @FXML
-    public StackPane root;
-
-    @FXML
-    public AnchorPane anchor_add,
+    private AnchorPane anchor_add,
                       anchor_update;
 
     @Override
@@ -219,10 +214,10 @@ public class PostView implements Initializable, View<PostController> {
                 comboboxType = "combobox_"+context+"_type";
 
         try {
-            TextField idField = (TextField) this.getClass().getField(textfieldId).get(this),
-                    nameField = (TextField) this.getClass().getField(textfieldName).get(this);
+            TextField idField = (TextField) this.getClass().getDeclaredField(textfieldId).get(this),
+                    nameField = (TextField) this.getClass().getDeclaredField(textfieldName).get(this);
 
-            ComboBox<Post.Type> comboBox = (ComboBox) this.getClass().getField(comboboxType).get(this);
+            ComboBox<Post.Type> comboBox = (ComboBox) this.getClass().getDeclaredField(comboboxType).get(this);
 
             idField.setText("");
             nameField.setText("");
@@ -245,10 +240,10 @@ public class PostView implements Initializable, View<PostController> {
                 comboboxType = "combobox_"+context+"_type";
 
         try {
-            TextField idField = (TextField) this.getClass().getField(textfieldId).get(this),
-                    nameField = (TextField) this.getClass().getField(textfieldName).get(this);
+            TextField idField = (TextField) this.getClass().getDeclaredField(textfieldId).get(this),
+                    nameField = (TextField) this.getClass().getDeclaredField(textfieldName).get(this);
 
-            ComboBox<Post.Type> comboBox = (ComboBox) this.getClass().getField(comboboxType).get(this);
+            ComboBox<Post.Type> comboBox = (ComboBox) this.getClass().getDeclaredField(comboboxType).get(this);
 
             if(idField.getText().equals("") || nameField.getText().equals("")) {
                 showError("Please provide data in the textfields");

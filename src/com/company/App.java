@@ -7,8 +7,10 @@ package com.company;
 import com.company.Controller.SarcinaController;
 import com.company.Service.CrudService;
 import com.company.Service.ObservableCrudService;
+import com.company.Utils.AppContext;
 import com.company.View.SarcinaView;
 import com.company.View.View;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -17,17 +19,26 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class App extends Application {
 
+    private static AppContext app_context;
     private static final String ROOT_PATH = "com.company";
 
     public static void main(String[] args) {
-        Main.prepMain(args);
-        launch(args);
+        app_context = new AppContext();
+        try {
+            app_context.parseArguments(Arrays.asList(args));
+            app_context.build();
+            launch(args);
+        }catch(InvalidArgumentException e) {
+            System.err.println(app_context.USAGE);
+            System.exit(1);
+        }
     }
 
     /**
@@ -45,10 +56,7 @@ public class App extends Application {
      *      The base entity, located at com.company.Domain.Cont<br>
      *      The entity's validator, located at com.company.Domain.ContValidator<br><br>
      *
-     *      As a helper, in the Main class there is a public static field identified as Main.contService,
-     *      from which we can retrieve a fully functioning Service for our given context<br><br>
-     *
-     *      Note the use of capitalization!<br><br>
+     *      Note the use of capitalization! The context name must be passed in camelcase, with the first letter lowercase<br><br>
      *
      *      Make sure the context you pass here follows these given guidelines.<br>
      *
@@ -64,15 +72,15 @@ public class App extends Application {
 
             String capitalizedContext = Character.toUpperCase(context.charAt(0)) + context.substring(1);
 
-            // contextView, contextController, Main.contextService (static field)
+            // contextView, contextController, app_context.getContextService()
+
+            Method getter = app_context.getClass().getDeclaredMethod("get"+capitalizedContext+"Service");
 
             Class controllerClass = Class.forName(ROOT_PATH+".Controller."+capitalizedContext+"Controller");
 
             Constructor controllerConstructor = controllerClass.getConstructor(ObservableCrudService.class);
 
-            Field mainField = Main.class.getField(context+"Service");
-
-            CrudService service = (CrudService) mainField.get(null);
+            CrudService service = (CrudService) getter.invoke(app_context);
             View view = loader.getController();
 
             view.setController(controllerConstructor.newInstance(service));
@@ -82,7 +90,6 @@ public class App extends Application {
             return Optional.of(mainScene);
 
         }catch(IOException |
-                NoSuchFieldException |
                 IllegalAccessException |
                 NoSuchMethodException |
                 InvocationTargetException |
@@ -98,20 +105,28 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) {
         Scene positionsScene = buildScene("positions.fxml", "post").get();
+        Scene fisaPostScene = buildScene("job_descript.fxml", "fisaPost").get();
 
         primaryStage.setTitle("Positions");
+        primaryStage.setResizable(false);
         primaryStage.setScene(positionsScene);
         primaryStage.show();
-
 
         Stage taskStage = new Stage();
 
         taskStage.setTitle("Tasks");
+        taskStage.setResizable(false);
 
-        SarcinaView taskView = new SarcinaView(new SarcinaController(Main.sarcinaService));
+        SarcinaView taskView = new SarcinaView(new SarcinaController(app_context.getSarcinaService()));
 
         taskStage.setScene(new Scene(taskView.getView()));
         taskStage.show();
 
+        Stage fisaPostStage = new Stage();
+        fisaPostStage.setTitle("Job description");
+        fisaPostStage.setResizable(false);
+        fisaPostStage.setScene(fisaPostScene);
+
+        fisaPostStage.show();
     }
 }

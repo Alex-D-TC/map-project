@@ -21,7 +21,7 @@ public class GetFisaPost extends Command {
 
             int id = ReadUtils.readInt(IOUtils.getScannerInstanceOnIn(), "Input position id");
             List<Sarcina> resultList =
-                    StreamSupport.stream(mediator.getTasks((elem) -> (elem.getPostID() == id))
+                    StreamSupport.stream(mediator.getTasksOfBindings((elem) -> (elem.getPostID() == id))
                                         .spliterator(), false)
                                         .collect(Collectors.toList());
 

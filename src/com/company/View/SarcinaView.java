@@ -26,25 +26,25 @@ import java.util.ResourceBundle;
  */
 public class SarcinaView implements View<SarcinaController> {
 
-    private static final int WIDTH = 487;
-    private static final int HEIGHT = 400;
+    public static final int WIDTH = 487;
+    public static final int HEIGHT = 400;
 
     private SarcinaController controller;
 
-    public TableView<Sarcina> main_table;
+    private TableView<Sarcina> main_table;
 
-    public TableColumn<Sarcina, Integer> main_table_column_id;
+    private TableColumn<Sarcina, Integer> main_table_column_id;
 
-    public TableColumn<Sarcina, String> main_table_column_desc;
+    private TableColumn<Sarcina, String> main_table_column_desc;
 
-    public TextField textfield_main_id,
+    private TextField textfield_main_id,
             textfield_main_desc,
             textfield_add_id,
             textfield_add_desc,
             textfield_update_id,
             textfield_update_desc;
 
-    public Button btn_add_ok,
+    private Button btn_add_ok,
             btn_add_cancel,
             btn_main_add,
             btn_main_update,
@@ -52,9 +52,9 @@ public class SarcinaView implements View<SarcinaController> {
             btn_update_ok,
             btn_update_cancel;
 
-    public StackPane root;
+    private StackPane root;
 
-    public AnchorPane anchor_add,
+    private AnchorPane anchor_add,
                       anchor_update;
 
     public SarcinaView(SarcinaController _controller) {
@@ -85,8 +85,8 @@ public class SarcinaView implements View<SarcinaController> {
                 textfieldName = "textfield_"+context+"_desc";
 
         try {
-            TextField idField = (TextField) this.getClass().getField(textfieldId).get(this),
-                    descField = (TextField) this.getClass().getField(textfieldName).get(this);
+            TextField idField = (TextField) this.getClass().getDeclaredField(textfieldId).get(this),
+                    descField = (TextField) this.getClass().getDeclaredField(textfieldName).get(this);
 
             idField.setText("");
             descField.setText("");
@@ -339,8 +339,8 @@ public class SarcinaView implements View<SarcinaController> {
      */
     private boolean fieldsClear(String context) {
         try {
-            TextField id_field = (TextField) getClass().getField("textfield_" + context + "_id").get(this),
-                    desc_field = (TextField) getClass().getField("textfield_" + context + "_desc").get(this);
+            TextField id_field = (TextField) getClass().getDeclaredField("textfield_" + context + "_id").get(this),
+                    desc_field = (TextField) getClass().getDeclaredField("textfield_" + context + "_desc").get(this);
 
             return id_field.getText().equals("") || desc_field.getText().equals("");
         }catch(IllegalAccessException | NoSuchFieldException e) {
@@ -409,8 +409,8 @@ public class SarcinaView implements View<SarcinaController> {
 
             Label idLab = new Label("ID:");
 
-            TextField textfield_id = (TextField) getClass().getField("textfield_"+context+"_id").get(this),
-                    textfield_desc = (TextField) getClass().getField("textfield_"+context+"_desc").get(this);
+            TextField textfield_id = (TextField) getClass().getDeclaredField("textfield_"+context+"_id").get(this),
+                      textfield_desc = (TextField) getClass().getDeclaredField("textfield_"+context+"_desc").get(this);
 
             grid.add(idLab, 0, 0);
             grid.add(textfield_id, 1, 0);
@@ -429,8 +429,8 @@ public class SarcinaView implements View<SarcinaController> {
             buttonBox.setPadding(new Insets(15,0,0,0));
             buttonBox.setSpacing(20);
 
-            Button button_ok = (Button) this.getClass().getField("btn_" + context + "_ok").get(this),
-                    button_cancel = (Button) this.getClass().getField("btn_"+ context +"_cancel").get(this);
+            Button button_ok = (Button) this.getClass().getDeclaredField("btn_" + context + "_ok").get(this),
+                    button_cancel = (Button) this.getClass().getDeclaredField("btn_"+ context +"_cancel").get(this);
 
             buttonBox.getChildren().addAll(button_ok, button_cancel);
 

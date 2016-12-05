@@ -16,16 +16,39 @@ import java.util.stream.StreamSupport;
 /**
  * Created by AlexandruD on 11/9/2016.
  */
-public class FisaPostService extends CrudService<FisaPostElemDTO> {
+public class FisaPostService extends ObservableCrudService<FisaPostElemDTO> {
 
-    private PostService postController;
-    private SarcinaService sarcinaController;
+    private ObservableCrudService<Post> postController;
+    private ObservableCrudService<Sarcina> sarcinaController;
 
-    public FisaPostService(CrudRepository<FisaPostElemDTO> repo, Validator<FisaPostElemDTO> validator,
-                           PostService postController, SarcinaService sarcinaController) {
+    public FisaPostService(CrudRepository<FisaPostElemDTO> repo,
+                           Validator<FisaPostElemDTO> validator,
+                           ObservableCrudService<Post> postController,
+                           ObservableCrudService<Sarcina> sarcinaController) {
         super(repo, validator);
         this.postController = postController;
         this.sarcinaController = sarcinaController;
+
+        // Remove all elements that have an invalid position id or task id
+        List<Integer> positionIDs = StreamSupport.stream(postController.getAll().spliterator(), false)
+                .map(Post::getId)
+                .collect(Collectors.toList());
+
+        List<Integer> taskIDs = StreamSupport.stream(sarcinaController.getAll().spliterator(), false)
+                .map(Sarcina::getId)
+                .collect(Collectors.toList());
+
+        List<FisaPostElemDTO> toRemove = StreamSupport.stream(getAll().spliterator(), false)
+                .filter((elem) -> !positionIDs.contains(elem.getPostID()) || !taskIDs.contains(elem.getSarcinaID()))
+                .collect(Collectors.toList());
+
+        toRemove.forEach((elem) -> {
+            try {
+                remove(elem);
+            }catch(ElementNotFoundException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -58,7 +81,12 @@ public class FisaPostService extends CrudService<FisaPostElemDTO> {
         }
     }
 
-    public Iterable<Post> getPositions(Predicate<FisaPostElemDTO> pred) {
+    /**
+     * Returns the positions that match the condition imposed upon the position - task bind
+     * @param pred The predicate representing the condition
+     * @return The list of matching positions
+     */
+    public Iterable<Post> getPositionsOfBindings(Predicate<FisaPostElemDTO> pred) {
         return StreamSupport.stream(get(pred).spliterator(), false)
                 .map((elem) -> {
                     int id = elem.getPostID();
@@ -68,11 +96,17 @@ public class FisaPostService extends CrudService<FisaPostElemDTO> {
                                     .reduce((a, b) -> (b))
                                     .get();
                 })
+                .distinct()
                 .collect(Collectors.toList());
 
     }
 
-    public Iterable<Sarcina> getTasks(Predicate<FisaPostElemDTO> pred) {
+    /**
+     * Returns the tasks that match the condition imposed upon the position - task bind
+     * @param pred The predicate representing the condition
+     * @return The list of matching tasks
+     */
+    public Iterable<Sarcina> getTasksOfBindings(Predicate<FisaPostElemDTO> pred) {
 
         return StreamSupport.stream(get(pred).spliterator(), false)
                 .map((elem) -> {
@@ -83,11 +117,17 @@ public class FisaPostService extends CrudService<FisaPostElemDTO> {
                                     .reduce((a, b) -> (b))
                                     .get();
                 })
+                .distinct()
                 .collect(Collectors.toList());
 
     }
 
-    public List<Sarcina> topTasks() {
+    /**
+     * Get the tasks sorted by the number of times they appear in the dataset.
+     * The tasks returned must have appeared at least once
+     * @return The top tasks
+     */
+    public List<AbstractMap.SimpleEntry<Sarcina, Long>> topTasks() {
 
         List<Map.Entry<Integer, Long>> apparitionList = new ArrayList<>();
 
@@ -104,19 +144,54 @@ public class FisaPostService extends CrudService<FisaPostElemDTO> {
                             .spliterator(), false)
                             .count();
 
-            apparitionList.add(new AbstractMap.SimpleEntry<>(id, appCount));
+            if(appCount != 0)
+                apparitionList.add(new AbstractMap.SimpleEntry<>(id, appCount));
         });
 
         Collections.sort(apparitionList, (a, b) -> (-1 * a.getValue().compareTo(b.getValue())));
 
         return apparitionList.stream()
-                .limit(3)
-                .map((id) -> (
-                        StreamSupport.stream(sarcinaController.get((elem) -> (elem.getId() == id.getKey()))
-                                .spliterator(), false)
-                        .reduce((a, b) -> (b)).get()))
+                .map((entry) -> {
+                        try {
+                            Sarcina s =
+                                StreamSupport.stream(sarcinaController.get((elem) ->
+                                            (elem.getId() == entry.getKey()))
+                                        .spliterator(), false)
+                                        .reduce((a, b) -> (b)).get();
+                            return new AbstractMap.SimpleEntry<>(s, entry.getValue());
+                        } catch (NoSuchElementException e) {
+                            // In case the task was removed during execution
+                            return null;
+                        }
+                    }
+                )
+                .filter((elem) -> elem != null)
                 .collect(Collectors.toList());
 
+    }
+
+    /**
+     * Add an invalidation listener to the underlying position controller
+     * @param listener The listener
+     */
+    public void postControllerAddInvalidationListener(InvalidationListener listener) {
+        postController.addListener(listener);
+    }
+
+    /**
+     * Add an invalidation listener to the underlying task controller
+     * @param listener The listener
+     */
+    public void sarcinaControllerAddInvalidationListener(InvalidationListener listener) {
+        sarcinaController.addListener(listener);
+    }
+
+    public Iterable<Post> postControllerGetAll() {
+        return postController.getAll();
+    }
+
+    public Iterable<Sarcina> sarcinaControllerGetAll() {
+        return sarcinaController.getAll();
     }
 
     private boolean checkIfPostExists(int p) {

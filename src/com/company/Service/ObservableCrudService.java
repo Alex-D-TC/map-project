@@ -10,6 +10,7 @@ import javafx.beans.Observable;
 import javax.xml.bind.ValidationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by AlexandruD on 11/20/2016.
@@ -45,7 +46,6 @@ public abstract class ObservableCrudService<T>
         notifyListeners();
     }
 
-
     @Override
     public void removeListener(InvalidationListener listener) {
         listeners.remove(listener);
@@ -54,10 +54,16 @@ public abstract class ObservableCrudService<T>
     @Override
     public void addListener(InvalidationListener listener) {
         listeners.add(listener);
+
+        // Clear all null listeners
+        listeners = listeners.stream().filter((elem) -> elem != null).collect(Collectors.toList());
     }
 
     private void notifyListeners() {
-        listeners.forEach((listener) -> listener.invalidated(this));
+        listeners.forEach((listener) -> {
+            if(listener != null)
+                listener.invalidated(this);
+        });
     }
 
 }
