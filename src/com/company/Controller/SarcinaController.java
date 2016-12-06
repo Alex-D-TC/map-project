@@ -1,13 +1,14 @@
 package com.company.Controller;
 
 import com.company.Domain.Sarcina;
-import com.company.Service.ObservableCrudService;
+import com.company.Service.SarcinaService;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.collections.ObservableList;
 
 import javax.xml.bind.ValidationException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -17,15 +18,30 @@ import java.util.stream.StreamSupport;
 public class SarcinaController {
 
     private ObservableList<Sarcina> model;
-    private ObservableCrudService<Sarcina> service;
+    private ObservableList<Sarcina> filterModel;
+    private SarcinaService service;
+    private Optional<String> lastSubstringFiltered;
 
-    public SarcinaController(ObservableCrudService<Sarcina> _service) {
+    public SarcinaController(SarcinaService _service) {
         service = _service;
+
+        lastSubstringFiltered = Optional.empty();
+
         service.addListener((ignored) -> model.setAll(
                 StreamSupport.stream(service.getAll().spliterator(), false)
                              .collect(Collectors.toList())
         ));
+
+        service.addListener((ignored) -> {
+           filter(lastSubstringFiltered);
+        });
+
         model = new ObservableListWrapper<>(
+                StreamSupport.stream(service.getAll().spliterator(), false)
+                              .collect(Collectors.toList())
+        );
+
+        filterModel = new ObservableListWrapper<>(
                 StreamSupport.stream(service.getAll().spliterator(), false)
                               .collect(Collectors.toList())
         );
@@ -33,6 +49,22 @@ public class SarcinaController {
 
     public ObservableList<Sarcina> getModel() {
         return model;
+    }
+
+    public ObservableList<Sarcina> getFilterModel() {
+        return filterModel;
+    }
+
+    public void filter(Optional<String> substring) {
+
+        lastSubstringFiltered = substring;
+
+        Iterable<Sarcina> filterResult = service.filter(substring);
+
+        if(!filterResult.equals(filterModel.subList(0, filterModel.size()))) {
+            filterModel.setAll(StreamSupport.stream(filterResult.spliterator(), false)
+                .collect(Collectors.toList()));
+        }
     }
 
     public void add(int id, String description)

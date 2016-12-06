@@ -2,8 +2,8 @@ package com.company.Utils.Commands;
 
 import com.company.Service.FisaPostService;
 import com.company.Domain.Sarcina;
-import com.company.Utils.IOUtils;
-import com.company.Utils.ReadUtils;
+import com.company.Utils.IO.IOUtils;
+import com.company.Utils.IO.ReadUtils;
 
 import java.util.List;
 import java.util.StringJoiner;

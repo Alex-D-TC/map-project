@@ -5,8 +5,8 @@ import com.company.Domain.Post;
 import com.company.Domain.Sarcina;
 import com.company.Repository.FileRepository;
 import com.company.Utils.Builders.RepositoryBuilder.FileRepositoryBuilder;
-import com.company.Utils.Parser;
-import com.company.Utils.Serializer;
+import com.company.Utils.IO.File.Parser;
+import com.company.Utils.IO.File.Serializer;
 import com.sun.istack.internal.NotNull;
 
 /**

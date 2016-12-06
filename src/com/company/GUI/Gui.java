@@ -1,8 +1,8 @@
 package com.company.GUI;
 
 import com.company.Utils.Commands.Command;
-import com.company.Utils.IOUtils;
-import com.company.Utils.ReadUtils;
+import com.company.Utils.IO.IOUtils;
+import com.company.Utils.IO.ReadUtils;
 
 import java.util.Map;
 

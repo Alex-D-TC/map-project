@@ -1,8 +1,8 @@
 package com.company.Utils.Builders.RepositoryBuilder;
 
 import com.company.Repository.FileRepository;
-import com.company.Utils.Parser;
-import com.company.Utils.Serializer;
+import com.company.Utils.IO.File.Parser;
+import com.company.Utils.IO.File.Serializer;
 
 import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;

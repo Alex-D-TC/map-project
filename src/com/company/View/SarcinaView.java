@@ -6,7 +6,6 @@ import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.animation.TranslateTransition;
-import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -17,9 +16,7 @@ import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 import javax.xml.bind.ValidationException;
-import java.net.URL;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
 /**
  * Created by AlexandruD on 11/20/2016.
@@ -42,7 +39,8 @@ public class SarcinaView implements View<SarcinaController> {
             textfield_add_id,
             textfield_add_desc,
             textfield_update_id,
-            textfield_update_desc;
+            textfield_update_desc,
+            textfield_main_filter_substring;
 
     private Button btn_add_ok,
             btn_add_cancel,
@@ -50,7 +48,8 @@ public class SarcinaView implements View<SarcinaController> {
             btn_main_update,
             btn_main_remove,
             btn_update_ok,
-            btn_update_cancel;
+            btn_update_cancel,
+            btn_main_clear_filter;
 
     private StackPane root;
 
@@ -143,6 +142,8 @@ public class SarcinaView implements View<SarcinaController> {
         closeUpdate.setByX(OFFSET);
 
 
+        btn_main_clear_filter.setOnMouseClicked((event) -> clearFilter());
+
         btn_main_add.setOnMouseClicked((event) -> {
             clearFields("add");
             openAdd.play();
@@ -204,6 +205,8 @@ public class SarcinaView implements View<SarcinaController> {
 
         });
 
+        textfield_main_filter_substring.setOnKeyReleased((event) -> filter());
+
         btn_update_cancel.setOnMouseClicked((event) -> closeUpdate.play());
 
         root.setPrefWidth(WIDTH);
@@ -234,10 +237,14 @@ public class SarcinaView implements View<SarcinaController> {
 
         textfield_add_id = new TextField();
 
+        textfield_main_filter_substring = new TextField();
+
         textfield_add_desc = new TextField();
 
         btn_add_ok = new Button("OK");
         btn_add_cancel = new Button("CANCEL");
+
+        btn_main_clear_filter = new Button("Clear Filter");
 
         btn_update_ok = new Button("OK");
         btn_update_cancel = new Button("CANCEL");
@@ -252,7 +259,7 @@ public class SarcinaView implements View<SarcinaController> {
 
         main_table.getColumns().addAll(main_table_column_id, main_table_column_desc);
 
-        main_table.setItems(controller.getModel());
+        main_table.setItems(controller.getFilterModel());
 
         main_table.getSelectionModel().selectedItemProperty().addListener((observable, old, newv) -> {
             displayTask(newv);
@@ -319,10 +326,27 @@ public class SarcinaView implements View<SarcinaController> {
         buttonBox.getChildren().addAll(
                 btn_main_add,
                 btn_main_update,
-                btn_main_remove
+                btn_main_remove,
+                btn_main_clear_filter
         );
 
-        rightPane.add(buttonBox, 0, 2, 2, 1);
+        // Filter controls
+
+        VBox filterBox = new VBox();
+        HBox substringFilter = new HBox();
+
+        substringFilter.setAlignment(Pos.CENTER);
+
+        Label substringLabel = new Label("Filter substring: ");
+
+        substringFilter.getChildren().add(substringLabel);
+        substringFilter.getChildren().add(textfield_main_filter_substring);
+
+        filterBox.getChildren().add(substringFilter);
+
+        rightPane.add(filterBox, 0, 2, 2, 1);
+
+        rightPane.add(buttonBox, 0, 3, 2, 1);
 
         pane.setRight(rightPane);
 
@@ -499,6 +523,23 @@ public class SarcinaView implements View<SarcinaController> {
      */
     public StackPane getView() {
         return root;
+    }
+
+    private void clearFilter() {
+        textfield_main_filter_substring.clear();
+        controller.filter(Optional.empty());
+    }
+
+    private void filter() {
+        String substring = textfield_main_filter_substring.getText();
+        Optional<String> substr;
+
+        if(substring.equals(""))
+            substr = Optional.empty();
+        else
+            substr = Optional.of(substring);
+
+        controller.filter(substr);
     }
 
 }

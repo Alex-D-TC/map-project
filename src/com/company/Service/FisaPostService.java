@@ -8,7 +8,6 @@ import javafx.beans.*;
 
 import javax.xml.bind.ValidationException;
 import java.util.*;
-import java.util.Observable;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -90,15 +89,19 @@ public class FisaPostService extends ObservableCrudService<FisaPostElemDTO> {
         return StreamSupport.stream(get(pred).spliterator(), false)
                 .map((elem) -> {
                     int id = elem.getPostID();
-                    return
-                            StreamSupport.stream(postController.get((post) -> (post.getId() == id))
-                                    .spliterator(), false)
-                                    .reduce((a, b) -> (b))
-                                    .get();
+                    try {
+                        return StreamSupport.stream(postController.get((post) -> (post.getId() == id))
+                                .spliterator(), false)
+                                .reduce((a, b) -> (b))
+                                .get();
+                    }catch(NoSuchElementException e) {
+                        // In case the task was removed during execution
+                        return null;
+                    }
                 })
+                .filter((elem) -> (elem != null))
                 .distinct()
                 .collect(Collectors.toList());
-
     }
 
     /**
@@ -111,15 +114,19 @@ public class FisaPostService extends ObservableCrudService<FisaPostElemDTO> {
         return StreamSupport.stream(get(pred).spliterator(), false)
                 .map((elem) -> {
                     int id = elem.getSarcinaID();
-                    return
-                            StreamSupport.stream(sarcinaController.get((sarcina) -> (sarcina.getId() == id))
-                                    .spliterator(), false)
-                                    .reduce((a, b) -> (b))
-                                    .get();
+                    try {
+                        return StreamSupport.stream(sarcinaController.get((sarcina) -> (sarcina.getId() == id))
+                                .spliterator(), false)
+                                .reduce((a, b) -> (b))
+                                .get();
+                    }catch(NoSuchElementException e) {
+                        // In case the task was removed during execution
+                        return null;
+                    }
                 })
+                .filter((elem) -> (elem != null))
                 .distinct()
                 .collect(Collectors.toList());
-
     }
 
     /**
@@ -167,7 +174,6 @@ public class FisaPostService extends ObservableCrudService<FisaPostElemDTO> {
                 )
                 .filter((elem) -> elem != null)
                 .collect(Collectors.toList());
-
     }
 
     /**

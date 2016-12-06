@@ -44,12 +44,14 @@ public class PostView implements Initializable, View<PostController> {
                      textfield_add_id,
                      textfield_add_name,
                      textfield_update_id,
-                     textfield_update_name;
+                     textfield_update_name,
+                     textfield_main_filter_substring;
 
     @FXML
     private ComboBox<Post.Type> combobox_main_type,
                                combobox_add_type,
-                               combobox_update_type;
+                               combobox_update_type,
+                               combobox_main_filter_type;
 
     @FXML
     private Button btn_add_ok,
@@ -58,7 +60,8 @@ public class PostView implements Initializable, View<PostController> {
                   btn_main_update,
                   btn_main_remove,
                   btn_update_ok,
-                  btn_update_cancel;
+                  btn_update_cancel,
+                  btn_main_clear_filter;
 
     @FXML
     private AnchorPane anchor_add,
@@ -69,6 +72,9 @@ public class PostView implements Initializable, View<PostController> {
         setupTable();
 
         btn_main_remove.setOnMouseClicked((event) -> removePosition());
+        btn_main_clear_filter.setOnMouseClicked((event) -> clearFilter());
+        textfield_main_filter_substring.setOnKeyReleased((event) -> filter());
+
         prepTransitions();
         setupComboBoxes();
     }
@@ -89,6 +95,36 @@ public class PostView implements Initializable, View<PostController> {
         combobox_add_type.setItems(wrapper);
         combobox_main_type.setItems(wrapper);
         combobox_update_type.setItems(wrapper);
+        combobox_main_filter_type.setItems(wrapper);
+
+        combobox_main_filter_type.getSelectionModel().selectedItemProperty().addListener((event) ->
+                filter());
+    }
+
+    private void filter() {
+        String substr = textfield_main_filter_substring.getText();
+        Post.Type tp = combobox_main_filter_type.getSelectionModel().getSelectedItem();
+        Optional<String> substring;
+        Optional<Post.Type> type;
+
+        if(substr.equals(""))
+            substring = Optional.empty();
+        else
+            substring = Optional.of(substr);
+
+        if(tp == null) {
+            type = Optional.empty();
+        }
+        else
+            type = Optional.of(tp);
+
+        controller.filter(type, substring);
+    }
+
+    private void clearFilter() {
+        textfield_main_filter_substring.clear();
+        combobox_main_filter_type.getSelectionModel().select(-1);
+        controller.filter(Optional.empty(), Optional.empty());
     }
 
     private void prepTransitions() {
@@ -104,7 +140,6 @@ public class PostView implements Initializable, View<PostController> {
         btn_main_add.setOnMouseClicked((event) -> {clearFields("add"); openAdd.play();});
         btn_add_cancel.setOnMouseClicked((event) -> {closeAdd.play(); clearFields("add");});
         btn_add_ok.setOnMouseClicked((event) -> {addPositiom(); closeAdd.play(); clearFields("add");});
-
 
         TranslateTransition updOpen = new TranslateTransition(new Duration(350), anchor_update);
         updOpen.setByX(-1 * X_OFFSET);
@@ -128,11 +163,12 @@ public class PostView implements Initializable, View<PostController> {
         });
         btn_update_cancel.setOnMouseClicked((event) -> {updClose.play(); clearFields("update");});
         btn_update_ok.setOnMouseClicked((event) -> {updatePosition(); updClose.play(); clearFields("update");});
+
     }
 
     public void setController(PostController controller) {
         this.controller = controller;
-        main_table.setItems(controller.getModel());
+        main_table.setItems(controller.getFilterModel());
     }
 
     private void setupTable() {

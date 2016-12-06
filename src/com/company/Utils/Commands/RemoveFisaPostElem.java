@@ -3,8 +3,8 @@ package com.company.Utils.Commands;
 import com.company.Service.FisaPostService;
 import com.company.Domain.FisaPostElemDTO;
 import com.company.Utils.Exceptions.ElementNotFoundException;
-import com.company.Utils.IOUtils;
-import com.company.Utils.ReadUtils;
+import com.company.Utils.IO.IOUtils;
+import com.company.Utils.IO.ReadUtils;
 
 import java.util.NoSuchElementException;
 

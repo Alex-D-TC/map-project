@@ -7,6 +7,7 @@ package com.company;
 import com.company.Controller.SarcinaController;
 import com.company.Service.CrudService;
 import com.company.Service.ObservableCrudService;
+import com.company.Service.SarcinaService;
 import com.company.Utils.AppContext;
 import com.company.View.SarcinaView;
 import com.company.View.View;
@@ -78,12 +79,17 @@ public class App extends Application {
 
             Class controllerClass = Class.forName(ROOT_PATH+".Controller."+capitalizedContext+"Controller");
 
-            Constructor controllerConstructor = controllerClass.getConstructor(ObservableCrudService.class);
+            final String SERVICE_CLASSPATH = "com.company.Service.";
+
+            Class serviceClass = Class.forName(SERVICE_CLASSPATH + capitalizedContext + "Service");
+
+            Constructor controllerConstructor = controllerClass.getConstructor(serviceClass);
 
             CrudService service = (CrudService) getter.invoke(app_context);
             View view = loader.getController();
 
-            view.setController(controllerConstructor.newInstance(service));
+            view.setController(controllerConstructor.newInstance(
+                    serviceClass.cast(service)));
 
             Scene mainScene = new Scene(root);
 
@@ -117,7 +123,8 @@ public class App extends Application {
         taskStage.setTitle("Tasks");
         taskStage.setResizable(false);
 
-        SarcinaView taskView = new SarcinaView(new SarcinaController(app_context.getSarcinaService()));
+        SarcinaView taskView = new SarcinaView(new SarcinaController(
+                (SarcinaService)app_context.getSarcinaService()));
 
         taskStage.setScene(new Scene(taskView.getView()));
         taskStage.show();

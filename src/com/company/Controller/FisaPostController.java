@@ -4,7 +4,6 @@ import com.company.Domain.FisaPostElemDTO;
 import com.company.Domain.Post;
 import com.company.Domain.Sarcina;
 import com.company.Service.FisaPostService;
-import com.company.Service.ObservableCrudService;
 import com.company.Utils.Exceptions.ElementExistsException;
 import com.company.Utils.Exceptions.ElementNotFoundException;
 import com.sun.javafx.collections.ObservableListWrapper;
@@ -24,9 +23,8 @@ public class FisaPostController {
     private ObservableList<Post> positionsModel;
     private ObservableList<Sarcina> tasksModel;
 
-    public FisaPostController(ObservableCrudService<FisaPostElemDTO> _service) {
-        // Dangerous!!
-        service = (FisaPostService) _service;
+    public FisaPostController(FisaPostService _service) {
+        service = _service;
 
         positionsModel = new ObservableListWrapper<>(
             StreamSupport.stream(service.postControllerGetAll().spliterator(), false)

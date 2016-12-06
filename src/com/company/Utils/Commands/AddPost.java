@@ -2,8 +2,8 @@ package com.company.Utils.Commands;
 
 import com.company.Service.PostService;
 import com.company.Utils.Exceptions.ElementExistsException;
-import com.company.Utils.IOUtils;
-import com.company.Utils.ReadUtils;
+import com.company.Utils.IO.IOUtils;
+import com.company.Utils.IO.ReadUtils;
 
 import javax.xml.bind.ValidationException;
 

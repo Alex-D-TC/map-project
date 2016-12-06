@@ -7,8 +7,8 @@ import java.io.Serializable;
  */
 public class FisaPostElemDTO implements Serializable {
 
-    private final int postID;
-    private final int sarcinaID;
+    private int postID;
+    private int sarcinaID;
 
     public FisaPostElemDTO() {
         postID = 0;
@@ -26,6 +26,14 @@ public class FisaPostElemDTO implements Serializable {
 
     public int getSarcinaID() {
         return sarcinaID;
+    }
+
+    public void setPostID(int id) {
+        postID = id;
+    }
+
+    public void setSarcinaID(int id) {
+        sarcinaID = id;
     }
 
     @Override

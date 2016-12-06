@@ -28,6 +28,10 @@ public class Post implements Serializable {
             new AbstractMap.SimpleEntry<>(PART_TIME_STRING, Type.PARTTIME)
           ).collect(Collectors.toMap((e) -> (e.getKey()), (e) -> (e.getValue()))));
 
+    public Post() {
+        // :>
+    }
+
     public Post(int id) {
         this.id = id;
         name = "";

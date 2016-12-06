@@ -10,6 +10,10 @@ public class Sarcina implements Serializable {
     private int id;
     private String description;
 
+    public Sarcina() {
+        // :>
+    }
+
     public Sarcina(int id) {
         this.id = id;
         description = "";

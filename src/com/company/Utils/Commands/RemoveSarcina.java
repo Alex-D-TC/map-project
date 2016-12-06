@@ -3,8 +3,8 @@ package com.company.Utils.Commands;
 import com.company.Service.SarcinaService;
 import com.company.Domain.Sarcina;
 import com.company.Utils.Exceptions.ElementNotFoundException;
-import com.company.Utils.IOUtils;
-import com.company.Utils.ReadUtils;
+import com.company.Utils.IO.IOUtils;
+import com.company.Utils.IO.ReadUtils;
 
 /**
  * Created by AlexandruD on 10/14/2016.

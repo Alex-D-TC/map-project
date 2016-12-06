@@ -6,14 +6,19 @@ import com.company.Repository.InMemoryRepository;
 import com.company.Service.ObservableCrudService;
 import com.company.Utils.Builders.FileRepos;
 import com.company.Utils.Builders.Services;
+import com.company.Utils.Builders.XMLRepos;
 import com.company.Utils.Factories.ParserFactory.FileFisaPostParserFactory;
 import com.company.Utils.Factories.ParserFactory.FilePostParserFactory;
 import com.company.Utils.Factories.ParserFactory.FileSarcinaParserFactory;
 import com.company.Utils.Factories.ParserFactory.FisaPostSerializerFactory;
-import com.company.Utils.Factories.SerializerFactory.PostSerializerFactory;
-import com.company.Utils.Factories.SerializerFactory.SarcinaSerializerFactory;
+import com.company.Utils.Factories.SerializerFactory.*;
+import com.company.Utils.IO.XML.FisaPostXMLParser;
+import com.company.Utils.IO.XML.PostXMLParser;
+import com.company.Utils.IO.XML.SarcinaXMLParser;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,8 +34,8 @@ public class AppContext {
     private CrudRepository<Sarcina> sarcinaRepository;
     private CrudRepository<Post> postRepository;
 
-    public final String USAGE = "USAGE: -[F|M] [taskFilePath, postFilePath, jobDescriptFilePath]";
-    private boolean isFile;
+    public static final String USAGE = "USAGE: -[F|M|X] [taskFilePath, postFilePath, jobDescriptFilePath]";
+    private boolean isFile, isXML;
     private String taskFilePath, postFilePath, fisaPostFilePath;
 
     /**
@@ -47,13 +52,25 @@ public class AppContext {
         String options =
                 args.stream().filter((arg) -> (arg.matches("-.*"))).collect(Collectors.toList()).get(0);
 
-        if(options.contains("F") && options.contains("M")) {
-            throw new InvalidArgumentException(null);
+        List<String> opts = new ArrayList<>();
+
+        if(options.contains("F"))
+            opts.add("F");
+
+        if(options.contains("M"))
+            opts.add("M");
+
+        if(options.contains("X"))
+            opts.add("X");
+
+        if(opts.size() != 1) {
+            throw new InvalidArgumentException(new String[]{"Invalid repository options"});
         }
 
         isFile = options.contains("F");
+        isXML = options.contains("X");
 
-        if(isFile) {
+        if(isFile || isXML) {
             if(args.size() <= 3) {
                 throw new InvalidArgumentException(new String[]{USAGE, "File paths must be passed if -F is chosen"});
             }
@@ -104,6 +121,25 @@ public class AppContext {
                     new FileFisaPostParserFactory().buildParser(),
                     new FisaPostSerializerFactory().buildSerializer());
 
+
+        } else if(isXML) {
+
+            XMLRepos xmlRepos = new XMLRepos();
+
+            sarcinaRepository = xmlRepos.newSarcinaXMLRepo(
+                    Paths.get(taskFilePath),
+                    new SarcinaXMLParser(),
+                    new SarcinaXMLSerializerFactory().newSarcinaXMLSerializer());
+
+            postRepository = xmlRepos.newPostXMLRepo(
+                    Paths.get(postFilePath),
+                    new PostXMLParser(),
+                    new PostXMLSerializerFactory().newPostXMLSerializer());
+
+            fisaPostRepository = xmlRepos.newFisaPostXMLRepo(
+                    Paths.get(fisaPostFilePath),
+                    new FisaPostXMLParser(),
+                    new FisaPostElemXMLSerializerFactory().newFisaPostXMLSerializer());
 
         } else {
             sarcinaRepository = new InMemoryRepository<>();
